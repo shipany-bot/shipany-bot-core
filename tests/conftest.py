@@ -9,7 +9,7 @@ if not load_dotenv(Path(__file__).parent / "fixtures/test.env", override=True):
   raise FileNotFoundError("No test.env file found in fixtures directory")
 
 # make sure that the environment variables are loaded before importing the settings
-from shipany.bot import bot_config  # noqa: F401
+from shipany.bot.config import bot_config  # noqa: F401
 
 
 @pytest.fixture()

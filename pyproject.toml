@@ -17,6 +17,11 @@ dynamic = ["version"]
 
 [tool.setuptools_scm]
 
+[project.optional-dependencies]
+cli = [
+  "typer",
+]
+
 [tool.coverage.run]
 branch = true
 
@@ -87,7 +92,7 @@ forbidden_modules = [
 ]
 
 [project.scripts]
-shipany-bot-worker = "shipany.worker.__main__:main"
+shipany-bot-cli = "shipany.bot.cli.main:app"
 
 [tool.mypy]
 explicit_package_bases = true
