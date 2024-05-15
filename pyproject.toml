@@ -14,6 +14,23 @@ dependencies = [
 name = "shipany.bot"
 requires-python = ">=3.10"
 dynamic = ["version"]
+authors = [ { name = "Shipany.bot Team", email = "team@shipany.bot" } ]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Operating System :: OS Independent",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3 :: Only",
+  "Framework :: Pydantic :: 2",
+]
+
+[project.urls]
+Repository = "https://github.com/shipany-bot/shipany-bot-core"
+Changelog = "https://github.com/shipany-bot/shipany-bot-core/blob/main/CHANGELOG.md"
 
 [tool.setuptools_scm]
 
