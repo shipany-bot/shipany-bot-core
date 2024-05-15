@@ -1,0 +1,74 @@
+indent-width = 2
+line-length = 120
+
+[lint]
+ignore = ["TRY003"]
+select = [
+  "ANN",
+  "ASYNC",
+  "B",
+  "C4",
+  "C90",
+  "DTZ",
+  "E",
+  "F",
+  "FA",
+  "FURB",
+  "I",
+  "N",
+  "PERF",
+  "PGH",
+  "PT",
+  "PTH",
+  "Q",
+  "RET",
+  "RSE",
+  "RUF",
+  "S",
+  "SIM",
+  "SLF",
+  "SLOT",
+  "T10",
+  "T20",
+  "TCH",
+  "TID",
+  "TRIO",
+  "TRY",
+  "UP",
+  "YTT",
+]
+[lint.mccabe]
+max-complexity = 5
+
+[lint.extend-per-file-ignores]
+"shipany-bot-scale/openapi_client/*" = [
+  "ANN",
+  "B904",
+  "C4",
+  "C90",
+  "E501",
+  "FA",
+  "I",
+  "N",
+  "PERF",
+  "PTH",
+  "RET",
+  "RUF",
+  "S",
+  "SIM101",
+  "SIM105",
+  "SIM108",
+  "TRY",
+  "UP",
+]
+
+"shipany-bot-web/shipany_bot_web/*" = [
+  "ANN",
+]
+
+"**/tests/*" = ["S101"]
+
+[lint.isort]
+combine-as-imports = true
+extra-standard-library = ["typing_extensions"]
+known-first-party = ["shipany"]

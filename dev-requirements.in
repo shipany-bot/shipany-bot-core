@@ -1,0 +1,5 @@
+-c requirements.txt
+coverage
+import-linter
+pytest
+pytest-asyncio

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://shipany.bot/schemas/bot/v1.0.json",
+  "name": "chat",
+  "description": "A simple chat bot.",
+  "version": "1.0",
+  "conversations": [
+    {
+      "$id": "start-conversation",
+      "activations": [],
+      "steps": [
+        {
+          "$id": "start",
+          "actions": [
+            {
+              "type": "answer",
+              "content": "Welcome to the chat."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

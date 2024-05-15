@@ -1,0 +1,110 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=64",
+  "setuptools-scm>=8"
+]
+
+[project]
+dependencies = [
+  "aiogram",
+  "jinja2",
+  "pydantic_settings",
+]
+name = "shipany.bot"
+requires-python = ">=3.10"
+dynamic = ["version"]
+
+[tool.setuptools_scm]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if self\\.debug", # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError", # Don't complain if non-runnable code isn't run:
+  "if 0:",
+  "if __name__ == .__main__.:", # Don't complain about abstract methods, they aren't run:
+  "@(abc\\.)?abstractmethod",
+  "if (t\\.)?TYPE_CHECKING:",
+  "assert_never",
+]
+skip_covered = true
+fail_under = 90
+
+[tool.importlinter]
+root_packages = ["shipany.bot"]
+include_external_packages = true
+exclude_type_checking_imports = true
+
+[[tool.importlinter.contracts]]
+name = "`shipany.bot.contrib.*` modules are independent"
+type = "independence"
+modules = [
+  "shipany.bot.contrib.aiogram",
+]
+
+[[tool.importlinter.contracts]]
+name = "`shipany.bot.conversation.*` modules are independent"
+type = "independence"
+modules = [
+  "shipany.bot.conversation.v1",
+]
+
+[[tool.importlinter.contracts]]
+name = "`shipany.bot.conversation.v1.models.actions.*` modules are independent"
+type = "independence"
+modules = [
+  "shipany.bot.conversation.v1.models.actions.function",
+  "shipany.bot.conversation.v1.models.actions.message",
+  "shipany.bot.conversation.v1.models.actions.transition",
+]
+
+[[tool.importlinter.contracts]]
+name = "`shipany.bot.conversation.*` doesn't depend on `shipany.bot.contrib.*`"
+type = "forbidden"
+source_modules = [
+  "shipany.bot.conversation",
+]
+forbidden_modules = [
+  "shipany.bot.contrib",
+]
+
+[[tool.importlinter.contracts]]
+name = "Only `shipany.bot.contrib.aiogram.*` can import `aiogram`."
+type = "forbidden"
+source_modules = [
+  "shipany.bot.conversation",
+  "shipany.bot.errors",
+]
+forbidden_modules = [
+  "aiogram",
+]
+
+[project.scripts]
+shipany-bot-worker = "shipany.worker.__main__:main"
+
+[tool.mypy]
+explicit_package_bases = true
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+follow_imports = "silent"
+ignore_missing_imports = true
+no_implicit_reexport = true
+plugins = [
+  "pydantic.mypy",
+]
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
