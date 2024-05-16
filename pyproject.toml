@@ -10,12 +10,13 @@ dependencies = [
   "aiogram",
   "jinja2",
   "pydantic_settings",
+  "semver",
 ]
 name = "shipany.bot"
 requires-python = ">=3.10"
 dynamic = ["version"]
 authors = [ { name = "Shipany.bot Team", email = "team@shipany.bot" } ]
-license = "MIT"
+license = {file = "LICENSE" }
 readme = "README.md"
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",

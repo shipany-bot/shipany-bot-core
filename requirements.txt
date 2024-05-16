@@ -3,6 +3,7 @@
 aiofiles==23.2.1
     # via aiogram
 aiogram==3.4.1
+    # via shipany-bot (pyproject.toml)
 aiohttp==3.9.4
     # via aiogram
 aiosignal==1.3.1
@@ -20,6 +21,7 @@ frozenlist==1.4.1
 idna==3.7
     # via yarl
 jinja2==3.1.4
+    # via shipany-bot (pyproject.toml)
 magic-filter==1.0.12
     # via aiogram
 markupsafe==2.1.5
@@ -35,8 +37,11 @@ pydantic==2.5.3
 pydantic-core==2.14.6
     # via pydantic
 pydantic-settings==2.2.1
+    # via shipany-bot (pyproject.toml)
 python-dotenv==1.0.1
     # via pydantic-settings
+semver==3.0.2
+    # via shipany-bot (pyproject.toml)
 typing-extensions==4.11.0
     # via
     #   aiogram

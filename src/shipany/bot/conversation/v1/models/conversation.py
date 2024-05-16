@@ -7,6 +7,9 @@ from .steps import Steps  # noqa: TCH001
 
 
 class Conversation(BaseModel):
-  conversation_id: str = Field(alias="$id")
-  activations: Activations
-  steps: Steps
+  """Conversation model. Describes a single conversation flow - a sequence of
+  steps activated by some activity in the messenger."""
+
+  conversation_id: str = Field(alias="$id", description="Unique conversation identifier.")
+  activations: Activations = Field(description="List of activations that trigger the conversation steps.")
+  steps: Steps = Field(description="List of steps in the conversation.")

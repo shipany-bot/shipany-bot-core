@@ -1,9 +1,11 @@
 from enum import StrEnum
 
+from pydantic import Field
+
 from .base import BaseActivation
 
 
-class SupportedEventActivationTypes(StrEnum):
+class EventName(StrEnum):
   ON_MESSAGE = "on-message"
   ON_EDITED_MESSAGE = "on-edited-message"
   ON_CHANNEL_POST = "on-channel-post"
@@ -25,4 +27,8 @@ class SupportedEventActivationTypes(StrEnum):
 
 
 class EventActivation(BaseActivation):
-  event: SupportedEventActivationTypes
+  """Describes an event that triggers the conversation. Commonly used for message events."""
+
+  event: EventName = Field(
+    description="List of supported event names that can trigger the conversation steps.",
+  )

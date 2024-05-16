@@ -6,8 +6,10 @@ from .base import BaseActivation
 
 
 class CommandActivation(BaseActivation):
-  command: str = Field(min_length=1, max_length=32)
-  prefix: str = Field(default="", max_length=1)
+  """Describes a command that triggers the conversation."""
+
+  command: str = Field(min_length=1, max_length=32, description="Command name.", examples=["start", "help"])
+  prefix: str = Field(default="", max_length=1, description="Command prefix.", examples=["/", "!"])
 
   @model_validator(mode="after")
   def check_command_prefix(self: Self) -> Self:

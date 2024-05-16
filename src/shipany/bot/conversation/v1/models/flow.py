@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from typing_extensions import Self
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, HttpUrl
 
 from .conversation import Conversation  # noqa: TCH001
+from .version import ManifestVersion  # noqa: TCH001
 
 
 class Flow(BaseModel):
-  self_schema: str = Field(alias="$schema")
-  name: str
-  description: str
-  version: str
-  conversations: list[Conversation]
+  """Flow model. The root of the conversation description. Contains a list of conversations."""
 
-  @field_validator("self_schema")
-  @classmethod
-  def self_schema_is_v1(cls: type[Self], v: str) -> str:
-    if not v.startswith("https://shipany.bot/schemas/bot/v1."):
-      raise ValueError("Wrong schema version")
-    return v
+  self_schema: HttpUrl = Field(
+    alias="$schema", description="Schema URL", examples=["https://shipany.bot/schemata/v1.0/flow.json"]
+  )
+  name: str = Field(description="Bot name.")
+  description: str = Field(description="Shortly describes the bot's purpose.")
+  version: ManifestVersion = Field(
+    default="1.0.0",
+    description="Version of the conversation description. Supports semantic versioning.",
+    examples=["1.0.0", "0.2.0-rc.1"],
+  )
+  conversations: list[Conversation] = Field(description="List of conversation flows supported by the bot.")
