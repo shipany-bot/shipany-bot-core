@@ -19,10 +19,10 @@ if t.TYPE_CHECKING:
 def test_create_nested_router_with_no_conversations() -> None:
   flow = Flow(
     **{
-      "$schema": "https://shipany.bot/schemas/bot/v1.0.json",
+      "$schema": "https://shipany.bot/schemata/v1.0/flow.json",
       "name": "Test",
       "description": "Test",
-      "version": "0.1",
+      "version": "0.1.0",
       "conversations": [],
     }
   )
@@ -35,10 +35,10 @@ def test_create_nested_router_with_no_conversations() -> None:
 def test_create_nested_router_with_one_conversation() -> None:
   flow = Flow(
     **{
-      "$schema": "https://shipany.bot/schemas/bot/v1.0.json",
+      "$schema": "https://shipany.bot/schemata/v1.0/flow.json",
       "name": "Test",
       "description": "Test",
-      "version": "0.1",
+      "version": "0.1.0",
       "conversations": [
         {
           "$id": "start",

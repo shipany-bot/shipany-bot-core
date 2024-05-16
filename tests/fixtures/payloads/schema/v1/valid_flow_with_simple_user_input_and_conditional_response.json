@@ -1,8 +1,8 @@
 {
-  "$schema": "https://shipany.bot/schemas/bot/v1.0.json",
+  "$schema": "https://shipany.bot/schemata/v1.0/flow.json",
   "name": "Simple Chat Bot",
   "description": "A simple chat bot that responds to user input.",
-  "version": "1.0",
+  "version": "1.0.0",
   "conversations": [
     {
       "$id": "start-conversation",

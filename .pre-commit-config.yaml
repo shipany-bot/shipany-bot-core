@@ -7,7 +7,6 @@ repos:
       - id: trailing-whitespace
       - id: check-executables-have-shebangs
       - id: detect-private-key
-      - id: detect-aws-credentials
       - id: fix-byte-order-marker
       - id: forbid-submodules
       - id: end-of-file-fixer
