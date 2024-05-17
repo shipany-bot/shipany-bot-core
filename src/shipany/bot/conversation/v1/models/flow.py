@@ -10,7 +10,7 @@ class Flow(BaseModel):
   """Flow model. The root of the conversation description. Contains a list of conversations."""
 
   self_schema: HttpUrl = Field(
-    alias="$schema", description="Schema URL", examples=["https://shipany.bot/schemata/v1.0/flow.json"]
+    alias="$schema", description="Schema URL", examples=["https://shipany.bot/schemata/0.1.0/schema.json"]
   )
   name: str = Field(description="Bot name.")
   description: str = Field(description="Shortly describes the bot's purpose.")

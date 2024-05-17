@@ -1,5 +1,5 @@
 {
-  "$schema": "https://shipany.bot/schemata/v1.0/flow.json",
+  "$schema": "https://shipany.bot/schemata/0.1.0/schema.json",
   "name": "Simple Bot",
   "description": "A simple bot that sends a welcome message.",
   "version": "1.0.0",

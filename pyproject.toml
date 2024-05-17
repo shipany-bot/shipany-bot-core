@@ -12,7 +12,7 @@ dependencies = [
   "pydantic_settings",
   "semver",
 ]
-name = "shipany.bot"
+name = "shipany-bot"
 requires-python = ">=3.10"
 dynamic = ["version"]
 authors = [ { name = "Shipany.bot Team", email = "team@shipany.bot" } ]

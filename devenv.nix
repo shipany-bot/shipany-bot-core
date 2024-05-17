@@ -26,7 +26,19 @@
   '';
 
   scripts.run-bot.exec = ''
-    shipany-bot-worker
+    shipany-bot-cli run $1
+  '';
+
+  scripts.tag-build.exec = ''
+    git tag $1
+    version=$(shipany-bot-cli version)
+    if [ "$version" != "$1" ]; then
+      echo Commit changes first
+      git tag --delete $1
+      exit 1
+    fi
+    mkdir -p schemata/$version
+    shipany-bot-cli schema > schemata/$version/schema.json
   '';
 
   enterTest = ''

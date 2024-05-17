@@ -13,7 +13,7 @@ Look at the example below:
 
 ```json
 {
-  "$schema": "https://shipany.bot/schemata/v1.0/flow.json",
+  "$schema": "https://shipany.bot/schemata/0.1.0/schema.json",
   "name": "Echo bot",
   "description": "A simple echo bot",
   "version": "1.0.0",

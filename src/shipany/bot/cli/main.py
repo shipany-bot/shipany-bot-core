@@ -1,6 +1,7 @@
 import json
 import logging
 from asyncio import run as asyncio_run
+from importlib import metadata
 from pathlib import Path
 
 import typer
@@ -26,6 +27,10 @@ def dispatcher(flow: Flow) -> Dispatcher:
 def run(
   source: Path = typer.Argument(..., help="Path to the json file with the conversation description", exists=True),  # noqa: B008
 ) -> None:
+  """Runs the bot with the conversation description from the given file.
+
+  Expects BOT_TOKEN environment variables to be set.
+  """
   from shipany.bot.config import bot_config
 
   instance = backend.create_instance(bot_config)
@@ -37,7 +42,15 @@ def run(
 def schema(
   indent: int = typer.Option(2, help="Non-negative number to pretty-print JSON with the given indent levale"),
 ) -> None:
+  """Prints the JSON schema of the conversation description."""
   typer.echo(json.dumps(Flow.model_json_schema(), indent=indent))
+
+
+@app.command()
+def version() -> None:
+  """Prints the version."""
+  version = metadata.version("shipany-bot")
+  typer.echo(version)
 
 
 if __name__ == "__main__":

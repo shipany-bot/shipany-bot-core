@@ -7,7 +7,7 @@ import pytest
 def valid_flow_with_conditional_responses() -> str:
   return json.dumps(
     {
-      "$schema": "https://shipany.bot/schemata/v1.0/flow.json",
+      "$schema": "https://shipany.bot/schemata/0.1.0/schema.json",
       "name": "welcome-bot",
       "description": "A simple bot welcoming users.",
       "version": "1.0.0",
