@@ -40,6 +40,12 @@ cli = [
   "typer",
 ]
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+shipany_bot = ["py.typed"]
+
 [tool.coverage.run]
 branch = true
 

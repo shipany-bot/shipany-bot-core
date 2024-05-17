@@ -41,6 +41,12 @@
     shipany-bot-cli schema > schemata/$version/schema.json
   '';
 
+  scripts.package-wheel.exec = ''
+    mkdir -p ./dist
+    rm -rf ./dist/*
+    pip wheel --isolated --wheel-dir ./dist --no-deps .
+  '';
+
   enterTest = ''
   '';
 
