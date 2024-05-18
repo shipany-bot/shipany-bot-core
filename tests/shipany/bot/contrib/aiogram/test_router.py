@@ -8,9 +8,11 @@ from aiogram.methods import SendMessage, TelegramMethod
 
 from shipany.bot.contrib.aiogram.events import AiogramEventHandler as EventHandler
 from shipany.bot.contrib.aiogram.router import create, handler
-from shipany.bot.conversation.v1 import errors
-from shipany.bot.conversation.v1.models import Conversation, Flow, Step
-from shipany.bot.conversation.v1.models.activations import Activation, CommandActivation, EventActivation
+from shipany.bot.conversation import errors
+from shipany.bot.conversation.models.v1.activations import Activation, CommandActivation, EventActivation
+from shipany.bot.conversation.models.v1.conversation import Conversation
+from shipany.bot.conversation.models.v1.flow import Flow
+from shipany.bot.conversation.models.v1.steps import Step
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message
@@ -43,7 +45,9 @@ def test_create_nested_router_with_one_conversation() -> None:
         {
           "$id": "start",
           "activations": [{"command": "/start", "next-step": "start"}],
-          "steps": [{"$id": "start", "actions": [{"type": "answer", "content": "Hello, World!"}]}],
+          "steps": [
+            {"$id": "start", "actions": [{"name": "MessageAction@1", "type": "answer", "content": "Hello, World!"}]}
+          ],
         }
       ],
     }
@@ -59,7 +63,9 @@ def test_actions_on_step_enter_happy_path() -> None:
     **{
       "$id": "start",
       "activations": [{"command": "/start", "next-step": "start"}],
-      "steps": [{"$id": "start", "actions": [{"type": "answer", "content": "Hello, World!"}]}],
+      "steps": [
+        {"$id": "start", "actions": [{"name": "MessageAction@1", "type": "answer", "content": "Hello, World!"}]}
+      ],
     }
   )
   assert len(conversation.activations) == 1
@@ -116,7 +122,7 @@ def test_actions_on_step_enter_no_step() -> None:
 )
 @pytest.mark.asyncio()
 async def test_handle_failed_conditional_event(activation: Activation, hello_message: Message) -> None:
-  steps = [Step(**{"$id": "$1", "actions": [{"type": "reply", "content": "Hello"}]})]
+  steps = [Step(**{"$id": "$1", "actions": [{"name": "MessageAction@1", "type": "reply", "content": "Hello"}]})]
   with pytest.raises(SkipHandler):
     await handler(activation, steps, event=hello_message)
 
@@ -138,6 +144,6 @@ async def test_handle_failed_conditional_event(activation: Activation, hello_mes
 async def test_handle_conditional_event(
   activation: Activation, hello_message: Message, expected_instance: type[TelegramMethod]
 ) -> None:
-  steps = [Step(**{"$id": "$1", "actions": [{"type": "reply", "content": "Hello"}]})]
+  steps = [Step(**{"$id": "$1", "actions": [{"name": "MessageAction@1", "type": "reply", "content": "Hello"}]})]
   result = await handler(activation, steps, event=hello_message)
   assert isinstance(result, expected_instance)

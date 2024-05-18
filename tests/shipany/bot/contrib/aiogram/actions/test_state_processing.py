@@ -3,16 +3,16 @@ from __future__ import annotations
 import pytest
 from aiogram.types import TelegramObject
 
-from shipany.bot.contrib.aiogram.actions.state import GoToNextAction, process
+from shipany.bot.actions.state_action.v1 import StateAction
 from shipany.bot.contrib.aiogram.context import Context
-from shipany.bot.conversation.v1.models.actions import StateAction
+from shipany.bot.contrib.aiogram.process.state_action.v1 import GoToNextAction, process
 
 
 @pytest.mark.parametrize(
   ("action", "captures_before", "captures_after"),
   [
-    (StateAction(**{"type": "store", "key": "hello", "value": None}), {"hello": "1"}, {}),
-    (StateAction(**{"type": "store", "key": "hello", "value": "1"}), {}, {"hello": "1"}),
+    (StateAction(**{"name": "StateAction@1", "type": "store", "key": "hello", "value": None}), {"hello": "1"}, {}),
+    (StateAction(**{"name": "StateAction@1", "type": "store", "key": "hello", "value": "1"}), {}, {"hello": "1"}),
   ],
 )
 @pytest.mark.asyncio()
@@ -20,7 +20,7 @@ async def test_state_action(
   action: StateAction, captures_before: dict[str, str], captures_after: dict[str, str]
 ) -> None:
   ctx = Context(event=TelegramObject())
-  result = await process(ctx, action)
+  result = process(ctx, action)
   match result:
     case GoToNextAction():
       assert ctx.captures == captures_after

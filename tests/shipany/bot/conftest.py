@@ -20,11 +20,12 @@ def valid_flow_with_conditional_responses() -> str:
               "$id": "start",
               "actions": [
                 {
-                  "type": "transition",
+                  "name": "TransitionAction@1",
                   "condition": {"in": ["hi", {"var": "message.text"}]},
                   "next-step": "hello-step",
                 },
                 {
+                  "name": "MessageAction@1",
                   "type": "reply",
                   "content": "👋!",
                 },
@@ -34,6 +35,7 @@ def valid_flow_with_conditional_responses() -> str:
               "$id": "hello-step",
               "actions": [
                 {
+                  "name": "MessageAction@1",
                   "type": "reply",
                   "content": "Hey there 👋!",
                 }

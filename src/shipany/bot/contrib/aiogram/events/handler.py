@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import typing as t
-from typing_extensions import Self
 
 from shipany.bot.contrib.aiogram.action_dispatcher import (
   DispatchedResult,
@@ -11,7 +10,7 @@ from shipany.bot.contrib.aiogram.action_dispatcher import (
   ReturnValue,
   handle,
 )
-from shipany.bot.conversation.v1.handlers import EventHandler
+from shipany.bot.conversation.handlers import EventHandler
 
 if t.TYPE_CHECKING:
   from aiogram.methods import TelegramMethod
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class AiogramEventHandler(EventHandler):
-  async def __call__(self: Self, context: Context) -> TelegramMethod | None:
+  async def __call__(self: t.Self, context: Context) -> TelegramMethod | None:
     logger.info("Event handler called")
     actions = self.traverse_actions()
     for action in actions:
@@ -31,8 +30,8 @@ class AiogramEventHandler(EventHandler):
         continue
       try:
         result: DispatchedResult = await handle(action, context)
-      except (ImportError, NotImplementedError):
-        logger.error("Error while processing action", exc_info=True)
+      except NotImplementedError as e:
+        logger.exception(f"Error while processing action: {e}", exc_info=False)  # noqa: TRY401
         break
 
       match result:

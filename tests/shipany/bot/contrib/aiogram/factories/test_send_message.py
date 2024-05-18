@@ -2,9 +2,9 @@ import pytest
 from aiogram.types import TelegramObject
 
 from shipany.bot import errors
+from shipany.bot.actions.message_action.v1 import MessageAction
 from shipany.bot.contrib.aiogram.context import Context
 from shipany.bot.contrib.aiogram.factories.send_message import construct_from
-from shipany.bot.conversation.v1.models.actions import MessageAction
 
 
 @pytest.mark.parametrize(
@@ -14,8 +14,8 @@ from shipany.bot.conversation.v1.models.actions import MessageAction
 @pytest.mark.parametrize(
   "action",
   [
-    MessageAction(**{"type": "reply", "content": "Hello"}),
-    MessageAction(**{"type": "answer", "content": "Hello"}),
+    MessageAction(**{"name": "MessageAction@1", "type": "reply", "content": "Hello"}),
+    MessageAction(**{"name": "MessageAction@1", "type": "answer", "content": "Hello"}),
   ],
 )
 def test_send_message_is_constructed(telegram_event: TelegramObject, action: MessageAction) -> None:
@@ -25,4 +25,6 @@ def test_send_message_is_constructed(telegram_event: TelegramObject, action: Mes
 
 def test_send_message_is_not_constructed() -> None:
   with pytest.raises(errors.NotImplementedError):
-    construct_from(Context(event=TelegramObject()), MessageAction(**{"type": "reply", "content": "Hello"}))
+    construct_from(
+      Context(event=TelegramObject()), MessageAction(**{"name": "MessageAction@1", "type": "reply", "content": "Hello"})
+    )

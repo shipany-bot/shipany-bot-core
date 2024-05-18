@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import typing as t
-from typing_extensions import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -11,7 +10,7 @@ class EqualsOperation(BaseModel):
   model_config = ConfigDict(frozen=True, extra="forbid")
 
   @model_validator(mode="after")
-  def check_args_length(self: Self) -> Self:
+  def check_args_length(self: t.Self) -> t.Self:
     if len(self.args) < 2:
       raise ValueError(f"Expected at least 2 arguments, got {len(self.args)}")
     return self
@@ -22,7 +21,7 @@ class InOperation(BaseModel):
   model_config = ConfigDict(frozen=True, extra="forbid")
 
   @model_validator(mode="after")
-  def check_args_length(self: Self) -> Self:
+  def check_args_length(self: t.Self) -> t.Self:
     if len(self.args) != 2:
       raise ValueError(f"Expected 2 arguments, got {len(self.args)}")
     return self
@@ -33,7 +32,7 @@ class AndOperation(BaseModel):
   model_config = ConfigDict(frozen=True, extra="forbid")
 
   @model_validator(mode="after")
-  def check_args_length(self: Self) -> Self:
+  def check_args_length(self: t.Self) -> t.Self:
     if len(self.args) < 2:
       raise ValueError(f"Expected at least 2 arguments, got {len(self.args)}")
     return self
@@ -44,7 +43,7 @@ class OrOperation(BaseModel):
   model_config = ConfigDict(frozen=True, extra="forbid")
 
   @model_validator(mode="after")
-  def check_args_length(self: Self) -> Self:
+  def check_args_length(self: t.Self) -> t.Self:
     if len(self.args) < 2:
       raise ValueError(f"Expected at least 2 arguments, got {len(self.args)}")
     return self
@@ -55,7 +54,7 @@ class NotOperation(BaseModel):
   model_config = ConfigDict(frozen=True, extra="forbid")
 
   @model_validator(mode="after")
-  def check_args_length(self: Self) -> Self:
+  def check_args_length(self: t.Self) -> t.Self:
     if len(self.args) != 1:
       raise ValueError(f"Expected 1 argument, got {len(self.args)}")
     return self

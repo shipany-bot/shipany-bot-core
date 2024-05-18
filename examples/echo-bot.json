@@ -17,6 +17,7 @@
           "$id": "reply-in-return",
           "actions": [
             {
+              "name": "MessageAction@1",
               "type": "reply",
               "content": "{{message.text}}"
             }

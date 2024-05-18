@@ -11,7 +11,7 @@ from aiogram.filters.command import Command
 from shipany.bot.contrib.aiogram.context import persistent_context
 from shipany.bot.contrib.aiogram.events.handler import AiogramEventHandler
 from shipany.bot.contrib.aiogram.renders.context_proxy import proxy
-from shipany.bot.conversation.v1.models import (
+from shipany.bot.conversation.models import (
   CommandActivation,
   Conversation,
   EventActivation,
@@ -23,8 +23,7 @@ if t.TYPE_CHECKING:
   from aiogram.methods import TelegramMethod
   from aiogram.types import TelegramObject
 
-  from shipany.bot.conversation.v1.models.activations import Activation
-  from shipany.bot.conversation.v1.models.steps import Steps
+  from shipany.bot.conversation.models import Activation, Steps
 
 logger = logging.getLogger(__name__)
 

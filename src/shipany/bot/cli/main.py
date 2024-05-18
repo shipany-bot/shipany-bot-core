@@ -9,7 +9,7 @@ from aiogram.dispatcher.dispatcher import Dispatcher
 
 from shipany.bot import loader
 from shipany.bot.contrib.aiogram import backend, router
-from shipany.bot.conversation.v1.models import Flow
+from shipany.bot.conversation.models import Flow
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ def schema(
 @app.command()
 def version() -> None:
   """Prints the version."""
-  version = metadata.version("shipany-bot")
+  version = metadata.version("shipany-bot-core")
   typer.echo(version)
 
 

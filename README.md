@@ -92,10 +92,9 @@ Each step in a conversation includes:
 ### Action Definitions
 Actions define what happens at each step. The schema includes several action types:
 
-**MessageAction**: Sends a message.
-**TransitionAction**: Transitions to another step.
-**FunctionAction**: Calls a function.
-**StateAction**: Modifies the state.
+**MessageAction@1**: Sends a message.
+**TransitionAction@1**: Transitions to another step.
+**StateAction@1**: Modifies the state.
 
 ### Operation Definitions
 Logical operations allow for complex conditions within the activations and actions. The schema supports:

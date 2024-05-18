@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from shipany.bot.contrib.aiogram.context import Context
 from shipany.bot.contrib.aiogram.events import AiogramEventHandler as EventHandler
-from shipany.bot.conversation.v1.loader import load
+from shipany.bot.conversation.loader import load
 
 
 @pytest.fixture()

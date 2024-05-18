@@ -1,6 +1,6 @@
 import pytest
 
-from shipany.bot.conversation.v1.models import CommandActivation
+from shipany.bot.conversation.models.v1.activations import CommandActivation
 
 
 @pytest.mark.parametrize(

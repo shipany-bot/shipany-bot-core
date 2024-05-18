@@ -1,1 +1,1 @@
-from .conversation.v1 import loader as loader
+from .conversation import loader as loader

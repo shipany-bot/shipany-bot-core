@@ -17,11 +17,12 @@
           "$id": "start",
           "actions": [
             {
+              "name": "MessageAction@1",
               "type": "answer",
               "content": "Welcome to the chat, {{username}}. How can I assist you?"
             },
             {
-              "type": "transition",
+              "name": "TransitionAction@1",
               "next-step": "next"
             }
           ]
@@ -30,11 +31,12 @@
           "$id": "next",
           "actions": [
             {
+              "name": "MessageAction@1",
               "type": "answer",
               "content": "Understood, what would you like to do next?"
             },
             {
-              "type": "transition",
+              "name": "TransitionAction@1",
               "next-step": "end"
             }
           ]
@@ -43,6 +45,7 @@
           "$id": "end",
           "actions": [
             {
+              "name": "MessageAction@1",
               "type": "answer",
               "content": "Thank you for chatting with us, {{username}}. Have a great day!"
             }

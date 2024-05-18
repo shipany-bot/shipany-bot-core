@@ -12,6 +12,7 @@
           "$id": "start",
           "actions": [
             {
+              "name": "MessageAction@1",
               "type": "answer",
               "content": "Welcome to the chat."
             }
