@@ -38,7 +38,7 @@ def _jinja_context_from(ctx: Context) -> type[JinjaContext]:
 
 
 def render_in_context(ctx: Context) -> Environment:
-  jinja_env = Environment(loader=BaseLoader(), autoescape=True)
+  jinja_env = Environment(loader=BaseLoader(), autoescape=False)  # noqa: S701
   jinja_env.context_class = _jinja_context_from(ctx)
   return jinja_env
 

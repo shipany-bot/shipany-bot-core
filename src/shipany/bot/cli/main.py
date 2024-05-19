@@ -1,11 +1,17 @@
+from __future__ import annotations
+
+import contextlib
 import json
 import logging
 from asyncio import run as asyncio_run
 from importlib import metadata
 from pathlib import Path
 
+import httpx
 import typer
 from aiogram.dispatcher.dispatcher import Dispatcher
+from pydantic import HttpUrl, TypeAdapter, ValidationError
+from pydantic_core import Url
 
 from shipany.bot import loader
 from shipany.bot.contrib.aiogram import backend, router
@@ -24,17 +30,36 @@ def dispatcher(flow: Flow) -> Dispatcher:
 
 
 @app.command()
-def run(
-  source: Path = typer.Argument(..., help="Path to the json file with the conversation description", exists=True),  # noqa: B008
-) -> None:
-  """Runs the bot with the conversation description from the given file.
+def run(source: str = typer.Argument(help="Path or URL to the json file with the conversation description")) -> None:
+  """Runs the bot with the conversation description from the given file stored locally or remotely.
 
   Expects BOT_TOKEN environment variables to be set.
   """
   from shipany.bot.config import bot_config
 
+  url: HttpUrl | Path | None = None
+
+  if url is None:
+    with contextlib.suppress(ValidationError):
+      url = TypeAdapter(Url).validate_python(source)
+
+  if url is None:
+    with contextlib.suppress(OSError):
+      url = Path(source).resolve(strict=True)
+
+  match url:
+    case Url():
+      with httpx.Client() as client:
+        response = client.get(str(url))
+        response.raise_for_status()
+      flow = loader.load(response.text)
+    case Path():
+      flow = loader.load(url.read_text())
+    case None:
+      typer.echo("Invalid source. Please provide a valid URL or a path to the file.")
+      raise typer.Exit(1)
+
   instance = backend.create_instance(bot_config)
-  flow = loader.load(source.read_text())
   asyncio_run(dispatcher(flow).start_polling(instance))
 
 

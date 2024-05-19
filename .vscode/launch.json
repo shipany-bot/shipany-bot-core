@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "shipany-bot-cli in debug mode",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "shipany.bot.cli.main",
+      "console": "internalConsole",
+      "args": ["run", "examples/echo-bot.json"],
+      "justMyCode": false
+    }
+  ]
+}

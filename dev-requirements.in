@@ -3,3 +3,4 @@ coverage
 import-linter
 pytest
 pytest-asyncio
+pytest-httpx

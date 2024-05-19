@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 # import environment variables from test.environment file to override any existing ones
 if not load_dotenv(Path(__file__).parent / "fixtures/test.env", override=True):
-  raise FileNotFoundError("No test.env file found in fixtures directory")
+  raise FileNotFoundError("No test.env file found in fixtures directory")  # pragma: no cover
 
 # make sure that the environment variables are loaded before importing the settings
 from shipany.bot.config import bot_config  # noqa: F401
@@ -16,7 +16,7 @@ from shipany.bot.config import bot_config  # noqa: F401
 def flows_path_factory() -> Callable[[int], Path]:
   def func(version: int) -> Path:
     directory = Path(__file__).parent / Path(f"fixtures/payloads/schema/v{version}")
-    if not directory.exists():
+    if not directory.exists():  # pragma: no cover
       raise FileNotFoundError(f"Directory {directory} does not exist. Can't find payloads for version {version}")
     return directory
 

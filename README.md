@@ -26,6 +26,7 @@ Look at the example below:
     "steps": [{
       "$id": "reply-in-return",
       "actions": [{
+        "name": "MessageAction@1",
         "type": "reply",
         "content": "{{message.text}}"
       }]
@@ -95,6 +96,8 @@ Actions define what happens at each step. The schema includes several action typ
 **MessageAction@1**: Sends a message.
 **TransitionAction@1**: Transitions to another step.
 **StateAction@1**: Modifies the state.
+**HttpRequest@1**: Sends an HTTP request and captures the response.
+**JsonPathAction@1**: Extracts data from a JSON response.
 
 ### Operation Definitions
 Logical operations allow for complex conditions within the activations and actions. The schema supports:

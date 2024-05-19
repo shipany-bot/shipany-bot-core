@@ -3,25 +3,37 @@
 aiofiles==23.2.1
     # via aiogram
 aiogram==3.4.1
-    # via shipany-bot (pyproject.toml)
 aiohttp==3.9.4
     # via aiogram
 aiosignal==1.3.1
     # via aiohttp
 annotated-types==0.6.0
     # via pydantic
+anyio==4.3.0
+    # via httpx
 attrs==23.2.0
     # via aiohttp
 certifi==2024.2.2
-    # via aiogram
+    # via
+    #   aiogram
+    #   httpcore
+    #   httpx
 frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
+h11==0.14.0
+    # via httpcore
+httpcore==1.0.5
+    # via httpx
+httpx==0.27.0
 idna==3.7
-    # via yarl
+    # via
+    #   anyio
+    #   httpx
+    #   yarl
 jinja2==3.1.4
-    # via shipany-bot (pyproject.toml)
+jsonpath-ng==1.6.1
 magic-filter==1.0.12
     # via aiogram
 markupsafe==2.1.5
@@ -30,6 +42,8 @@ multidict==6.0.5
     # via
     #   aiohttp
     #   yarl
+ply==3.11
+    # via jsonpath-ng
 pydantic==2.5.3
     # via
     #   aiogram
@@ -37,11 +51,13 @@ pydantic==2.5.3
 pydantic-core==2.14.6
     # via pydantic
 pydantic-settings==2.2.1
-    # via shipany-bot (pyproject.toml)
 python-dotenv==1.0.1
     # via pydantic-settings
 semver==3.0.2
-    # via shipany-bot (pyproject.toml)
+sniffio==1.3.1
+    # via
+    #   anyio
+    #   httpx
 typing-extensions==4.11.0
     # via
     #   aiogram

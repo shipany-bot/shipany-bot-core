@@ -10,13 +10,11 @@ from shipany.bot.contrib.aiogram.process.transition_action.v1 import GoToStep, p
   ("action", "expected_step_id"),
   [
     (
-      TransitionAction(**{"name": "TransitionAction@1", "type": "transition", "next-step": "hello", "condition": None}),
+      TransitionAction(**{"name": "TransitionAction@1", "next-step": "hello", "condition": None}),
       "hello",
     ),
     (
-      TransitionAction(
-        **{"name": "TransitionAction@1", "type": "transition", "next-step": "hello", "condition": {"==": [0, 0]}}
-      ),
+      TransitionAction(**{"name": "TransitionAction@1", "next-step": "hello", "condition": {"==": [0, 0]}}),
       "hello",
     ),
   ],

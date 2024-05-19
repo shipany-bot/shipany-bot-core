@@ -19,7 +19,7 @@ from shipany.bot.contrib.aiogram.process.state_action.v1 import GoToNextAction, 
 async def test_state_action(
   action: StateAction, captures_before: dict[str, str], captures_after: dict[str, str]
 ) -> None:
-  ctx = Context(event=TelegramObject())
+  ctx = Context(captures=captures_before, event=TelegramObject())
   result = process(ctx, action)
   match result:
     case GoToNextAction():
