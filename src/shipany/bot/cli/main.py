@@ -3,19 +3,20 @@ from __future__ import annotations
 import contextlib
 import json
 import logging
+import typing as t
 from asyncio import run as asyncio_run
 from importlib import metadata
 from pathlib import Path
 
 import httpx
+import inject
 import typer
-from aiogram.dispatcher.dispatcher import Dispatcher
 from pydantic import HttpUrl, TypeAdapter, ValidationError
 from pydantic_core import Url
 
 from shipany.bot import loader
-from shipany.bot.contrib.aiogram import backend, router
 from shipany.bot.conversation.models import Flow
+from shipany.bot.runtime.secrets import SecretsProvider
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,14 +24,12 @@ logger = logging.getLogger(__name__)
 app = typer.Typer()
 
 
-def dispatcher(flow: Flow) -> Dispatcher:
-  dp = Dispatcher()
-  dp.include_router(router.create(flow))
-  return dp
-
-
 @app.command()
-def run(source: str = typer.Argument(help="Path or URL to the json file with the conversation description")) -> None:
+def run(  # noqa: C901
+  source: str = typer.Argument(help="Path or URL to the json file with the conversation description"),
+  backend_to_use: t.Annotated[str, typer.Option("--backend", help="Backend to use for the bot")] = "aiogram",
+  secret: list[str] = typer.Option([], help="Secret in form of key=value to pass to the bot. Can be many"),  # noqa: B008
+) -> None:
   """Runs the bot with the conversation description from the given file stored locally or remotely.
 
   Expects BOT_TOKEN environment variables to be set.
@@ -59,8 +58,22 @@ def run(source: str = typer.Argument(help="Path or URL to the json file with the
       typer.echo("Invalid source. Please provide a valid URL or a path to the file.")
       raise typer.Exit(1)
 
-  instance = backend.create_instance(bot_config)
-  asyncio_run(dispatcher(flow).start_polling(instance))
+  if secret:
+
+    class SimpleDictAsSecretsProvider:
+      def dump(self: t.Self) -> dict[str, str]:
+        return dict(key_value.split("=", maxsplit=1) for key_value in secret)
+
+    inject.configure(lambda binder: binder.bind(SecretsProvider, SimpleDictAsSecretsProvider()))
+
+  match backend_to_use:
+    case "aiogram":
+      from shipany.bot.contrib.aiogram import backend
+
+      asyncio_run(backend.serve(flow, bot_config))
+    case _:
+      typer.echo(f"Invalid backend: {backend_to_use}. Please provide a supported backend.")
+      raise typer.Exit(1)
 
 
 @app.command()
