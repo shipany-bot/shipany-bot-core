@@ -18,6 +18,15 @@ if t.TYPE_CHECKING:
   from aiogram.types import Message
 
 
+@pytest.fixture(autouse=True)
+def _set_runtime_injections() -> None:
+  import inject
+
+  from shipany.bot.runtime.bindings import default_runtime_injections
+
+  inject.clear_and_configure(default_runtime_injections)
+
+
 def test_create_nested_router_with_no_conversations() -> None:
   flow = Flow(
     **{

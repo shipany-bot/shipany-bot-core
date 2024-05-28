@@ -16,12 +16,17 @@ from pydantic_core import Url
 
 from shipany.bot import loader
 from shipany.bot.conversation.models import Flow
+from shipany.bot.runtime.bindings import default_runtime_injections
 from shipany.bot.runtime.secrets import SecretsProvider
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = typer.Typer()
+
+
+def captures() -> t.MutableMapping[str, str]:
+  return {}
 
 
 @app.command()
@@ -58,13 +63,18 @@ def run(  # noqa: C901
       typer.echo("Invalid source. Please provide a valid URL or a path to the file.")
       raise typer.Exit(1)
 
-  if secret:
+  def configure_injections(binder: inject.Binder) -> None:
+    binder.install(default_runtime_injections)
 
-    class SimpleDictAsSecretsProvider:
-      def dump(self: t.Self) -> dict[str, str]:
-        return dict(key_value.split("=", maxsplit=1) for key_value in secret)
+    if secret:
 
-    inject.configure(lambda binder: binder.bind(SecretsProvider, SimpleDictAsSecretsProvider()))
+      class SimpleDictAsSecretsProvider:
+        def dump(self: t.Self) -> dict[str, str]:
+          return dict(key_value.split("=", maxsplit=1) for key_value in secret)
+
+      binder.bind(SecretsProvider, SimpleDictAsSecretsProvider())
+
+  inject.configure(configure_injections)
 
   match backend_to_use:
     case "aiogram":
