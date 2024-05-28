@@ -8,7 +8,7 @@ from aiogram.dispatcher.event.bases import SkipHandler
 from aiogram.dispatcher.router import Router
 from aiogram.filters.command import Command
 
-from shipany.bot.contrib.aiogram.context import persistent_context
+from shipany.bot.contrib.aiogram import context
 from shipany.bot.contrib.aiogram.events.handler import AiogramEventHandler
 from shipany.bot.contrib.aiogram.renders.context_proxy import proxy
 from shipany.bot.conversation.models import (
@@ -29,15 +29,15 @@ logger = logging.getLogger(__name__)
 
 
 async def handler(activation: Activation, steps: Steps, event: TelegramObject) -> TelegramMethod | None:
-  context = persistent_context.model_copy(update={"event": event})
-  if activation.condition is not None:
-    logger.info("Checking condition %s", activation.condition)
-    if not apply(activation.condition, proxy(context)):
-      logger.info("The condition is not met. Skipping the handler.")
-      raise SkipHandler
+  with context.context(event) as ctx:
+    if activation.condition is not None:
+      logger.info("Checking condition %s", activation.condition)
+      if not apply(activation.condition, proxy(ctx)):
+        logger.info("The condition is not met. Skipping the handler.")
+        raise SkipHandler
 
-  wrapper = AiogramEventHandler(steps, begin_with_step_id=activation.next_step)
-  return await wrapper(context)
+    wrapper = AiogramEventHandler(steps, begin_with_step_id=activation.next_step)
+    return await wrapper(ctx)
 
 
 def activate_entry_points(conversation: Conversation, router: Router) -> None:

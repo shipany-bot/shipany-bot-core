@@ -9,6 +9,7 @@ requires = [
 dependencies = [
   "aiogram",
   "httpx",
+  "inject",
   "jinja2",
   "jsonpath-ng",
   "pydantic_settings",

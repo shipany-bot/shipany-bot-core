@@ -69,6 +69,9 @@ class VariablesGetter(Mapping[str, t.Any]):
       # restrict the access to curtain attributes
       return proxy(self._ctx.event)
 
+    if key == "secrets":
+      return self._ctx.secrets
+
     if key in self._ctx.captures:
       logger.info("Fetching %s from captures", key)
       return self._ctx.captures[key]

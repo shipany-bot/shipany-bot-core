@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import typing as t
 
+from shipany.bot import errors
 from shipany.bot.contrib.aiogram.action_dispatcher import (
   DispatchedResult,
   GoToNextAction,
@@ -26,13 +27,12 @@ class AiogramEventHandler(EventHandler):
     actions = self.traverse_actions()
     for action in actions:
       logger.info("Executing action: %s", action)
-      if not action:
-        continue
+      if not action:  # pragma: no cover
+        continue  # unreachable code but makes mypy happy
       try:
         result: DispatchedResult = await handle(action, context)
-      except NotImplementedError as e:
-        logger.exception(f"Error while processing action: {e}", exc_info=False)  # noqa: TRY401
-        break
+      except (NotImplementedError, TypeError) as e:
+        raise errors.ActionNotImplementedError(action.name, str(e)) from None
 
       match result:
         case ReturnValue(value=value):
@@ -42,4 +42,6 @@ class AiogramEventHandler(EventHandler):
         case GoToStep(step_id=step_id):
           logger.info("Transitioning to next step: %s", step_id)
           actions.send(step_id)
+        case _:  # pragma: no cover
+          t.assert_never(result)
     return None
