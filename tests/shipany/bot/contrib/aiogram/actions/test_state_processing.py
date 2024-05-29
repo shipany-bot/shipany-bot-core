@@ -5,7 +5,7 @@ from aiogram.types import TelegramObject
 
 from shipany.bot.actions.state_action.v1 import StateAction
 from shipany.bot.contrib.aiogram.context import Context
-from shipany.bot.contrib.aiogram.process.state_action.v1 import GoToNextAction, process
+from shipany.bot.contrib.aiogram.process.state_action.v1 import Continue, process
 
 
 @pytest.mark.parametrize(
@@ -22,7 +22,7 @@ async def test_state_action(
   ctx = Context(captures=captures_before, event=TelegramObject())
   result = process(ctx, action)
   match result:
-    case GoToNextAction():
+    case Continue():
       assert ctx.captures == captures_after
     case _:  # pragma: no cover
       pytest.fail("Unexpected result")

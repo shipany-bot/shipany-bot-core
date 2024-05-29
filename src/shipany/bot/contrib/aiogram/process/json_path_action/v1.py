@@ -6,7 +6,7 @@ import typing as t
 
 from jsonpath_ng import jsonpath, parse
 
-from shipany.bot.contrib.aiogram.action_dispatcher import GoToNextAction
+from shipany.bot.contrib.aiogram.action_dispatcher import Continue
 from shipany.bot.contrib.aiogram.context import Context
 from shipany.bot.contrib.aiogram.renders.jinja_env import template_from_context
 
@@ -17,9 +17,9 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def process(ctx: Context, action: JsonPathAction) -> GoToNextAction:
+def process(ctx: Context, action: JsonPathAction) -> Continue:
   if not action.captures:
-    return GoToNextAction()
+    return Continue()
 
   value = template_from_context(action.input_, ctx)
   jsonpath_expr: jsonpath.Child = parse(action.expression)
@@ -31,4 +31,4 @@ def process(ctx: Context, action: JsonPathAction) -> GoToNextAction:
   except json.JSONDecodeError as e:
     logger.exception(f"Error while parsing JSON: {e}", exc_info=False)  # noqa: TRY401
     pass
-  return GoToNextAction()
+  return Continue()

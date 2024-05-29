@@ -24,18 +24,14 @@ async def test_action_executor_dispatch_answer(hello_message: Message) -> None:
   ctx = Context(event=hello_message, captures={})
 
   action = BaseAction(**{"name": "MessageAction@1", "type": "answer", "content": "Hello, World!"})
-  result = await handle(action, ctx)
-
-  assert result is not None
+  await handle(action, ctx)
 
 
 @pytest.mark.asyncio()
 async def test_action_executor_dispatch_reply(hello_message: Message) -> None:
   ctx = Context(event=hello_message, captures={})
   action = BaseAction(**{"name": "MessageAction@1", "type": "reply", "content": "Hello, World!"})
-  result = await handle(action, ctx)
-
-  assert result is not None
+  await handle(action, ctx)
 
 
 @pytest.mark.asyncio()

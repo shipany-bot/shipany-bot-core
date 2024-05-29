@@ -15,11 +15,15 @@ from .context import Context  # noqa: TCH001
 logger = logging.getLogger(__name__)
 
 
-class ReturnValue(BaseModel):
-  value: TelegramMethod | None
+class Terminate(BaseModel):
+  pass
 
 
-class GoToNextAction(BaseModel):
+class AwaitMethodAndContinue(BaseModel):
+  value: TelegramMethod
+
+
+class Continue(BaseModel):
   pass
 
 
@@ -27,7 +31,7 @@ class GoToStep(BaseModel):
   step_id: str
 
 
-DispatchedResult = ReturnValue | GoToNextAction | GoToStep
+DispatchedResult = Terminate | Continue | GoToStep | AwaitMethodAndContinue
 
 
 def _split_action_name(action_name: str) -> tuple[str, str]:
