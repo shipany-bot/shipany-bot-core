@@ -1,0 +1,34 @@
+.. A new scriv changelog fragment.
+..
+.. Uncomment the header that is right (remove the leading dots).
+..
+.. Removed
+.. -------
+..
+.. - A bullet item for the Removed category.
+..
+.. Added
+.. -----
+..
+.. - A bullet item for the Added category.
+..
+.. Changed
+.. -------
+..
+.. - A bullet item for the Changed category.
+..
+.. Deprecated
+.. ----------
+..
+.. - A bullet item for the Deprecated category.
+
+Fixed
+-----
+
+- Conversation flow may contain two or more actions in a row which communicate something to the user. Prior to this fix, a bot could not reply and then follow up with another message. This has been fixed.
+
+.. Security
+.. --------
+..
+.. - A bullet item for the Security category.
+..

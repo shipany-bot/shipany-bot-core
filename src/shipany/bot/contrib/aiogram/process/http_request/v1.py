@@ -9,7 +9,7 @@ import httpx
 from jinja2 import BaseLoader, Environment
 from jinja2.runtime import Context as JinjaContext
 
-from shipany.bot.contrib.aiogram.action_dispatcher import GoToNextAction
+from shipany.bot.contrib.aiogram.action_dispatcher import Continue
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.http_request.v1 import HttpRequest
@@ -53,7 +53,7 @@ def template_from_response(template: str, response: httpx.Response) -> str:
   return env.from_string(template).render()
 
 
-async def process(ctx: Context, action: HttpRequest) -> GoToNextAction:
+async def process(ctx: Context, action: HttpRequest) -> Continue:
   async with httpx.AsyncClient() as client:
     response = await client.request(
       method=action.method,
@@ -68,4 +68,4 @@ async def process(ctx: Context, action: HttpRequest) -> GoToNextAction:
       for key, template in action.captures.items():
         ctx.captures[key] = template_from_response("{{" + template + "}}", response)
 
-  return GoToNextAction()
+  return Continue()

@@ -7,7 +7,7 @@ from aiogram.types import TelegramObject
 
 from shipany.bot.actions.http_request.v1 import HttpRequest
 from shipany.bot.contrib.aiogram.context import Context
-from shipany.bot.contrib.aiogram.process.http_request.v1 import GoToNextAction, process
+from shipany.bot.contrib.aiogram.process.http_request.v1 import Continue, process
 
 if t.TYPE_CHECKING:
   from pydantic import JsonValue
@@ -63,7 +63,7 @@ async def test_state_action(
   action = HttpRequest(**raw_action)
   result = await process(ctx, action)
   match result:
-    case GoToNextAction():
+    case Continue():
       assert ctx.captures == captures_after
     case _:  # pragma: no cover
       pytest.fail("Unexpected result")

@@ -20,7 +20,6 @@ from shipany.bot.conversation.models import (
 from shipany.bot.jsonlogic import apply
 
 if t.TYPE_CHECKING:
-  from aiogram.methods import TelegramMethod
   from aiogram.types import TelegramObject
 
   from shipany.bot.conversation.models import Activation, Steps
@@ -28,7 +27,7 @@ if t.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-async def handler(activation: Activation, steps: Steps, event: TelegramObject) -> TelegramMethod | None:
+async def handler(activation: Activation, steps: Steps, event: TelegramObject) -> None:
   with context.context(event) as ctx:
     if activation.condition is not None:
       logger.info("Checking condition %s", activation.condition)
@@ -37,7 +36,7 @@ async def handler(activation: Activation, steps: Steps, event: TelegramObject) -
         raise SkipHandler
 
     wrapper = AiogramEventHandler(steps, begin_with_step_id=activation.next_step)
-    return await wrapper(ctx)
+    await wrapper(ctx)
 
 
 def activate_entry_points(conversation: Conversation, router: Router) -> None:
