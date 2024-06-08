@@ -5,7 +5,7 @@
   packages = [ pkgs.git ];
 
   enterShell = ''
-    uv pip install -r requirements.txt -r dev-requirements.txt -e .
+    uv pip install -r 'requirements[cli].txt' -r dev-requirements.txt -e .
   '';
 
   scripts.compile.exec = ''

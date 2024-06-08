@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import json
 import logging
 import typing as t
-from asyncio import run as asyncio_run
 from importlib import metadata
 from pathlib import Path
 
@@ -18,6 +18,7 @@ from shipany.bot import loader
 from shipany.bot.conversation.models import Flow
 from shipany.bot.runtime.bindings import default_runtime_injections
 from shipany.bot.runtime.secrets import SecretsProvider
+from shipany.bot.web import server
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ def run(  # noqa: C901
   source: str = typer.Argument(help="Path or URL to the json file with the conversation description"),
   backend_to_use: t.Annotated[str, typer.Option("--backend", help="Backend to use for the bot")] = "aiogram",
   secret: list[str] = typer.Option([], help="Secret in form of key=value to pass to the bot. Can be many"),  # noqa: B008
+  web: bool = typer.Option(True, help="Enable the web server"),
 ) -> None:
   """Runs the bot with the conversation description from the given file stored locally or remotely.
 
@@ -80,10 +82,20 @@ def run(  # noqa: C901
     case "aiogram":
       from shipany.bot.contrib.aiogram import backend
 
-      asyncio_run(backend.serve(flow, bot_config))
+      bot_server = backend.serve(flow, bot_config)
     case _:
       typer.echo(f"Invalid backend: {backend_to_use}. Please provide a supported backend.")
       raise typer.Exit(1)
+
+  web_server = server.serve(flow, bot_config) if web else None
+
+  async def _run_servers() -> None:
+    async with asyncio.TaskGroup() as tg:
+      tg.create_task(bot_server)
+      if web_server:
+        tg.create_task(web_server)
+
+  asyncio.run(_run_servers())
 
 
 @app.command()

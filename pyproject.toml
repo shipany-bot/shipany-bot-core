@@ -8,6 +8,7 @@ requires = [
 [project]
 dependencies = [
   "aiogram",
+  "fastapi",
   "httpx",
   "inject",
   "jinja2",

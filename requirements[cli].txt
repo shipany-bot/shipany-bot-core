@@ -10,7 +10,10 @@ aiosignal==1.3.1
 annotated-types==0.6.0
     # via pydantic
 anyio==4.3.0
-    # via httpx
+    # via
+    #   httpx
+    #   starlette
+    #   watchfiles
 attrs==23.2.0
     # via aiohttp
 certifi==2024.2.2
@@ -19,23 +22,39 @@ certifi==2024.2.2
     #   httpcore
     #   httpx
 click==8.1.7
-    # via typer
+    # via
+    #   typer
+    #   uvicorn
+dnspython==2.6.1
+    # via email-validator
+email-validator==2.1.1
+    # via fastapi
+fastapi==0.111.0
+fastapi-cli==0.0.4
+    # via fastapi
 frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
 h11==0.14.0
-    # via httpcore
+    # via
+    #   httpcore
+    #   uvicorn
 httpcore==1.0.5
     # via httpx
+httptools==0.6.1
+    # via uvicorn
 httpx==0.27.0
+    # via fastapi
 idna==3.7
     # via
     #   anyio
+    #   email-validator
     #   httpx
     #   yarl
 inject==5.2.1
 jinja2==3.1.4
+    # via fastapi
 jsonpath-ng==1.6.1
 magic-filter==1.0.12
     # via aiogram
@@ -49,11 +68,14 @@ multidict==6.0.5
     # via
     #   aiohttp
     #   yarl
+orjson==3.10.3
+    # via fastapi
 ply==3.11
     # via jsonpath-ng
 pydantic==2.5.3
     # via
     #   aiogram
+    #   fastapi
     #   pydantic-settings
 pydantic-core==2.14.6
     # via pydantic
@@ -61,7 +83,13 @@ pydantic-settings==2.2.1
 pygments==2.18.0
     # via rich
 python-dotenv==1.0.1
-    # via pydantic-settings
+    # via
+    #   pydantic-settings
+    #   uvicorn
+python-multipart==0.0.9
+    # via fastapi
+pyyaml==6.0.1
+    # via uvicorn
 rich==13.7.1
     # via typer
 semver==3.0.2
@@ -71,12 +99,26 @@ sniffio==1.3.1
     # via
     #   anyio
     #   httpx
+starlette==0.37.2
+    # via fastapi
 typer==0.12.3
+    # via fastapi-cli
 typing-extensions==4.11.0
     # via
     #   aiogram
+    #   fastapi
     #   pydantic
     #   pydantic-core
     #   typer
+ujson==5.10.0
+    # via fastapi
+uvicorn==0.30.1
+    # via fastapi
+uvloop==0.19.0
+    # via uvicorn
+watchfiles==0.22.0
+    # via uvicorn
+websockets==12.0
+    # via uvicorn
 yarl==1.9.4
     # via aiohttp
