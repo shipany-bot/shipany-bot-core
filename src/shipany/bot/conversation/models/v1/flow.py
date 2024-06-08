@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, HttpUrl
 from shipany.bot.contrib.semver.model import ManifestVersion  # noqa: TCH001
 
 from .conversation import Conversation  # noqa: TCH001
+from .webhook import Webhook  # noqa: TCH001
 
 
 class Flow(BaseModel):
@@ -20,4 +21,5 @@ class Flow(BaseModel):
     description="Version of the conversation description. Supports semantic versioning.",
     examples=["1.0.0", "0.2.0-rc.1"],
   )
+  webhooks: list[Webhook] = Field(description="List of webhooks supported by the bot.")
   conversations: list[Conversation] = Field(description="List of conversation flows supported by the bot.")
