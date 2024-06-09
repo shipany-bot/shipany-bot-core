@@ -4,6 +4,7 @@ from .v1.activations import (
   Activations as Activations,
   CommandActivation as CommandActivation,
   EventActivation as EventActivation,
+  WebhookActivation as WebhookActivation,
 )
 from .v1.conversation import Conversation as Conversation
 from .v1.flow import Flow as Flow
