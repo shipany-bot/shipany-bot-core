@@ -9,7 +9,7 @@ import httpx
 from jinja2 import BaseLoader, Environment
 from jinja2.runtime import Context as JinjaContext
 
-from shipany.bot.contrib.aiogram.action_dispatcher import Continue
+from shipany.bot.conversation.handlers.actions import Continue
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.http_request.v1 import HttpRequest

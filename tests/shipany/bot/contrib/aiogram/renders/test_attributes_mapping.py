@@ -4,7 +4,7 @@ import typing as t
 
 import pytest
 
-from shipany.bot.contrib.aiogram.context import Context
+from shipany.bot.contrib.aiogram.context import ExtendedContext as Context
 from shipany.bot.contrib.aiogram.renders import template_from_context
 from shipany.bot.contrib.aiogram.renders.attributes_mapping import ATTRIBUTES_MAPPING, VariablesGetter
 

@@ -5,13 +5,13 @@ import typing as t
 import pytest
 from aiogram.dispatcher.event.bases import SkipHandler
 
-from shipany.bot.contrib.aiogram.events import AiogramEventHandler as EventHandler
 from shipany.bot.contrib.aiogram.router import create, handler
 from shipany.bot.conversation import errors
-from shipany.bot.conversation.models.v1.activations import Activation, EventActivation
-from shipany.bot.conversation.models.v1.conversation import Conversation
-from shipany.bot.conversation.models.v1.flow import Flow
-from shipany.bot.conversation.models.v1.steps import Step
+from shipany.bot.conversation.handlers.activations import ActivationHandler
+from shipany.bot.conversation.models.activations import Activation, EventActivation
+from shipany.bot.conversation.models.conversation import Conversation
+from shipany.bot.conversation.models.flow import Flow
+from shipany.bot.conversation.models.steps import Step
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message
@@ -79,7 +79,7 @@ def test_actions_on_step_enter_happy_path() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    navigator = EventHandler(conversation.steps, begin_with_step_id=activation.next_step)
+    navigator = ActivationHandler(conversation.steps, begin_with_step_id=activation.next_step)
     actions = list(navigator.traverse_actions())
     assert len(actions) == 1
 
@@ -95,7 +95,7 @@ def test_empty_actions_in() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    navigator = EventHandler(conversation.steps, begin_with_step_id=activation.next_step)
+    navigator = ActivationHandler(conversation.steps, begin_with_step_id=activation.next_step)
     assert len(list(navigator.traverse_actions())) == 0
 
 
@@ -111,7 +111,7 @@ def test_actions_on_step_enter_no_step() -> None:
     assert len(conversation.activations) == 1
 
     for activation in conversation.activations:
-      navigator = EventHandler(conversation.steps, begin_with_step_id=activation.next_step)
+      navigator = ActivationHandler(conversation.steps, begin_with_step_id=activation.next_step)
       list(navigator.traverse_actions())
     pytest.fail("Expected exception but none was raised")  # pragma: no cover
   except errors.NoStepFoundError:

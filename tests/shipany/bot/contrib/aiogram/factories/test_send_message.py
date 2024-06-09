@@ -3,7 +3,7 @@ from aiogram.types import TelegramObject
 
 from shipany.bot import errors
 from shipany.bot.actions.message_action.v1 import MessageAction
-from shipany.bot.contrib.aiogram.context import Context
+from shipany.bot.contrib.aiogram.context import ExtendedContext as Context
 from shipany.bot.contrib.aiogram.factories.send_message import construct_from
 
 

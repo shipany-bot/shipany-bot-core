@@ -4,34 +4,48 @@ import inspect
 import logging
 import re
 import typing as t
+from collections.abc import Awaitable  # noqa: TCH003
 
-from aiogram.methods import TelegramMethod  # noqa: TCH002
-from pydantic import BaseModel, ValidationError, validate_call
+from pydantic import BaseModel, ConfigDict, ValidationError, validate_call
 
-from shipany.bot.conversation.models.v1.action import BaseAction  # noqa: TCH001
-
-from .context import Context  # noqa: TCH001
+from shipany.bot.conversation.models.action import BaseAction  # noqa: TCH001
+from shipany.bot.runtime.context import Context  # noqa: TCH001
 
 logger = logging.getLogger(__name__)
 
 
 class Terminate(BaseModel):
-  pass
+  model_config = ConfigDict(
+    frozen=True,
+    extra="forbid",
+  )
 
 
-class AwaitMethodAndContinue(BaseModel):
-  value: TelegramMethod
+class AwaitObjectAndContinue(BaseModel):
+  value: Awaitable[None]
+  model_config = ConfigDict(
+    frozen=True,
+    arbitrary_types_allowed=True,
+    extra="forbid",
+  )
 
 
 class Continue(BaseModel):
-  pass
+  model_config = ConfigDict(
+    frozen=True,
+    extra="forbid",
+  )
 
 
 class GoToStep(BaseModel):
   step_id: str
+  model_config = ConfigDict(
+    frozen=True,
+    extra="forbid",
+  )
 
 
-DispatchedResult = Terminate | Continue | GoToStep | AwaitMethodAndContinue
+DispatchedResult = Terminate | Continue | GoToStep | AwaitObjectAndContinue
 
 
 def _split_action_name(action_name: str) -> tuple[str, str]:
