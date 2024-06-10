@@ -25,7 +25,7 @@ async def root() -> str:
 
 
 async def current_bot_flow() -> Flow:
-  raise RuntimeError("Dependency is not overridden")
+  raise NotImplementedError("Dependency is not overridden")
 
 
 class WebhookResponse(BaseModel):
@@ -85,7 +85,7 @@ async def _hook_endpoint(
   return WebhookResponse(message="OK")
 
 
-def serve(flow: Flow, bot_config: BotConfig) -> t.Coroutine[t.Any, t.Any, None]:
+def add_webhooks(flow: Flow) -> None:
   for conversation in flow.conversations:
     for activation in conversation.activations:
       match activation:
@@ -99,8 +99,11 @@ def serve(flow: Flow, bot_config: BotConfig) -> t.Coroutine[t.Any, t.Any, None]:
           )
         case _:
           logger.warning("Unsupported activation type in context of Web server: %s", type(activation))
-
   app.dependency_overrides[current_bot_flow] = lambda: flow
+
+
+def serve(flow: Flow, bot_config: BotConfig) -> t.Coroutine[t.Any, t.Any, None]:
+  add_webhooks(flow)
 
   config = uvicorn.Config(
     app,

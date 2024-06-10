@@ -3,6 +3,15 @@ import json
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def _set_runtime_injections() -> None:
+  import inject
+
+  from shipany.bot.runtime.bindings import default_runtime_injections
+
+  inject.clear_and_configure(default_runtime_injections)
+
+
 @pytest.fixture()
 def valid_flow_with_conditional_responses() -> str:
   return json.dumps(

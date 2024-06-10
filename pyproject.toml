@@ -52,7 +52,10 @@ shipany_bot = ["py.typed"]
 
 [tool.coverage.run]
 branch = true
-source = ["src/shipany/bot"]
+source = [
+  "src/shipany/bot",
+  "tests",
+]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
