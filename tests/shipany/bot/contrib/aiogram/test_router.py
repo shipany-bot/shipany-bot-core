@@ -12,6 +12,7 @@ from shipany.bot.conversation.models.activations import Activation, EventActivat
 from shipany.bot.conversation.models.conversation import Conversation
 from shipany.bot.conversation.models.flow import Flow
 from shipany.bot.conversation.models.steps import Step
+from shipany.bot.runtime.context import Context
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message
@@ -24,6 +25,11 @@ def _set_runtime_injections() -> None:
   from shipany.bot.runtime.bindings import default_runtime_injections
 
   inject.clear_and_configure(default_runtime_injections)
+
+
+@pytest.fixture()
+def default_context() -> Context:
+  return Context()
 
 
 def test_create_nested_router_with_no_conversations() -> None:
@@ -66,7 +72,7 @@ def test_create_nested_router_with_one_conversation() -> None:
     pytest.fail("Unexpected exception")
 
 
-def test_actions_on_step_enter_happy_path() -> None:
+def test_actions_on_step_enter_happy_path(default_context: Context) -> None:
   conversation = Conversation(
     **{
       "$id": "start",
@@ -79,12 +85,12 @@ def test_actions_on_step_enter_happy_path() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    navigator = ActivationHandler(conversation.steps, begin_with_step_id=activation.next_step)
-    actions = list(navigator.traverse_actions())
+    navigator = ActivationHandler(default_context, activation)
+    actions = list(navigator.traverse_actions(conversation.steps))
     assert len(actions) == 1
 
 
-def test_empty_actions_in() -> None:
+def test_empty_actions_in(default_context: Context) -> None:
   conversation = Conversation(
     **{
       "$id": "start",
@@ -95,11 +101,11 @@ def test_empty_actions_in() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    navigator = ActivationHandler(conversation.steps, begin_with_step_id=activation.next_step)
-    assert len(list(navigator.traverse_actions())) == 0
+    navigator = ActivationHandler(default_context, activation)
+    assert len(list(navigator.traverse_actions(conversation.steps))) == 0
 
 
-def test_actions_on_step_enter_no_step() -> None:
+def test_actions_on_step_enter_no_step(default_context: Context) -> None:
   conversation = Conversation(
     **{
       "$id": "start",
@@ -111,8 +117,8 @@ def test_actions_on_step_enter_no_step() -> None:
     assert len(conversation.activations) == 1
 
     for activation in conversation.activations:
-      navigator = ActivationHandler(conversation.steps, begin_with_step_id=activation.next_step)
-      list(navigator.traverse_actions())
+      navigator = ActivationHandler(default_context, activation)
+      list(navigator.traverse_actions(conversation.steps))
     pytest.fail("Expected exception but none was raised")  # pragma: no cover
   except errors.NoStepFoundError:
     pass

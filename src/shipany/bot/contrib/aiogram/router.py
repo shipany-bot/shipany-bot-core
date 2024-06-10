@@ -10,7 +10,7 @@ from aiogram.dispatcher.router import Router
 from aiogram.filters.command import Command
 
 from shipany.bot.contrib.aiogram import context
-from shipany.bot.contrib.aiogram.renders.context_proxy import proxy
+from shipany.bot.conversation import errors
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import (
   CommandActivation,
@@ -18,7 +18,6 @@ from shipany.bot.conversation.models import (
   EventActivation,
   Flow,
 )
-from shipany.bot.jsonlogic import apply
 
 if t.TYPE_CHECKING:
   from aiogram.types import TelegramObject
@@ -30,14 +29,12 @@ logger = logging.getLogger(__name__)
 
 async def handler(activation: Activation, steps: Steps, event: TelegramObject) -> None:
   with context.context(event) as ctx:
-    if activation.condition is not None:
-      logger.info("Checking condition %s", activation.condition)
-      if not apply(activation.condition, proxy(ctx)):
-        logger.info("The condition is not met. Skipping the handler.")
-        raise SkipHandler
-
-    wrapper = ActivationHandler(steps, begin_with_step_id=activation.next_step)
-    await wrapper(ctx)
+    try:
+      handler = ActivationHandler(ctx, activation)
+      await handler(steps)
+    except errors.ActivationPreconditionNotMeetError:
+      logger.info("The condition is not met. Skipping the handler.")
+      raise SkipHandler from None
 
 
 def activate_entry_points(conversation: Conversation, router: Router) -> None:

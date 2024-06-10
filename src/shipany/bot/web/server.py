@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-import contextlib
 import logging
 import typing as t
 
 import uvicorn
-from aiogram import types as aiogram_types
-from aiogram.dispatcher.event.bases import SkipHandler
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 
-from shipany.bot.contrib.aiogram.router import handler
+from shipany.bot.conversation import errors
+from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import Conversation, Flow, WebhookActivation
+from shipany.bot.runtime import context
 
 if t.TYPE_CHECKING:
   from shipany.bot.config import BotConfig
@@ -75,8 +74,13 @@ async def _hook_endpoint(
     e.status_code = webhook.status_code_error
     raise e from None
 
-  with contextlib.suppress(SkipHandler):
-    await handler(activation, conversation.steps, aiogram_types.TelegramObject())
+  with context.context() as ctx:
+    try:
+      handler = ActivationHandler(ctx, activation)
+      await handler(conversation.steps)
+    except errors.ActivationPreconditionNotMeetError:
+      logger.info("The condition is not met. Skipping the handler.")
+      return WebhookResponse(message="The condition is not met. Skipping the handler.")
 
   return WebhookResponse(message="OK")
 
