@@ -1,13 +1,24 @@
+import typing as t
+
+import pytest
+from aiogram.types import User
 from fastapi.testclient import TestClient
 
+from shipany.bot.contrib.aiogram.factories import telegram_objects
 from shipany.bot.conversation.loader import load
 from shipany.bot.web.server import add_webhooks, app
 
 
-def test_root() -> None:
+def test_root(monkeypatch: pytest.MonkeyPatch) -> None:
+  class MockBot:
+    async def me(self: t.Self) -> User:
+      return User(id=1, is_bot=True, first_name="Test", username="test")
+
+  monkeypatch.setattr(telegram_objects, "bot", MockBot)
   client = TestClient(app)
   response = client.get("/")
   assert response.status_code == 200
+  assert response.headers["content-type"] == "text/html; charset=utf-8"
 
 
 def test_webhook_with_correct_header_set(valid_flow_with_webhook_activations: str) -> None:

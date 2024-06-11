@@ -5,8 +5,10 @@ import typing as t
 
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from shipany.bot.contrib.aiogram.factories import telegram_objects
 from shipany.bot.conversation import errors
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import Conversation, Flow, WebhookActivation
@@ -19,9 +21,21 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root() -> str:
-  return "Hello, world!"
+  about_me = await telegram_objects.bot().me()
+  return f"""\
+<!DOCTYPE html>
+<html>
+<head>
+<title>{about_me.first_name}</title>
+</head>
+<body>
+<h1>{about_me.first_name}</h1>
+<p>Hi, I am @{about_me.username}.</p>
+<p>Talk to me at <a href="https://t.me/{about_me.username}">t.me/{about_me.username}</a>.</p>
+</body>
+</html>"""
 
 
 async def current_bot_flow() -> Flow:
