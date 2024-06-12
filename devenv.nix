@@ -5,7 +5,7 @@
   packages = [ pkgs.git ];
 
   enterShell = ''
-    uv pip install -r requirements.txt -r dev-requirements.txt -e .
+    uv pip install -r 'requirements[cli].txt' -r dev-requirements.txt -e .
   '';
 
   scripts.compile.exec = ''
@@ -37,8 +37,6 @@
       git tag --delete $1
       exit 1
     fi
-    mkdir -p schemata/$version
-    shipany-bot-cli schema > schemata/$version/schema.json
   '';
 
   scripts.package-wheel.exec = ''

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .models.v1.flow import Flow
-from .models.v1.validators import all_checks
+from .models.flow import Flow
+from .models.validators import all_checks
 
 
 def _validate(flow: Flow) -> None:

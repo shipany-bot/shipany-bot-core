@@ -7,12 +7,12 @@ from aiogram.types import Message, MessageReactionUpdated
 from shipany.bot import errors
 from shipany.bot.actions.message_action.v1 import MessageAction, SupportedMessageActionTypes
 from shipany.bot.contrib.aiogram import renders
-from shipany.bot.contrib.aiogram.context import Context
+from shipany.bot.contrib.aiogram.context import ExtendedContext
 
 logger = logging.getLogger(__name__)
 
 
-def construct_from(ctx: Context, action: MessageAction) -> SendMessage:
+def construct_from(ctx: ExtendedContext, action: MessageAction) -> SendMessage:
   match ctx.event:
     case MessageReactionUpdated(chat=chat, _bot=_bot):
       if action.action_type != SupportedMessageActionTypes.answer:
@@ -28,4 +28,4 @@ def construct_from(ctx: Context, action: MessageAction) -> SendMessage:
           return ctx.event.answer(content)
       t.assert_never(action.action_type)  # unreachable
 
-  raise errors.NotImplementedError(f"Bot can't answer from event type: {type(ctx.event)}")
+  raise errors.NotImplementedError(f"Bot can't answer from event type: {type(ctx.event).__name__}")

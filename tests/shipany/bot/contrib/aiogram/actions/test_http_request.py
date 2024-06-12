@@ -6,8 +6,9 @@ import pytest
 from aiogram.types import TelegramObject
 
 from shipany.bot.actions.http_request.v1 import HttpRequest
-from shipany.bot.contrib.aiogram.context import Context
-from shipany.bot.contrib.aiogram.process.http_request.v1 import Continue, process
+from shipany.bot.contrib.aiogram.context import ExtendedContext
+from shipany.bot.contrib.aiogram.process.http_request.v1 import process
+from shipany.bot.conversation.handlers.actions import Continue
 
 if t.TYPE_CHECKING:
   from pydantic import JsonValue
@@ -59,7 +60,7 @@ async def test_state_action(
   httpx_mock: HTTPXMock,
 ) -> None:
   httpx_mock.add_response(**response)
-  ctx = Context(captures=captures_before, event=TelegramObject())
+  ctx = ExtendedContext(captures=captures_before, event=TelegramObject())
   action = HttpRequest(**raw_action)
   result = await process(ctx, action)
   match result:

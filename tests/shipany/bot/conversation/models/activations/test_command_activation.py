@@ -1,6 +1,6 @@
 import pytest
 
-from shipany.bot.conversation.models.v1.activations import CommandActivation
+from shipany.bot.conversation.models.activations.command import CommandActivation
 
 
 @pytest.mark.parametrize(
@@ -14,4 +14,4 @@ from shipany.bot.conversation.models.v1.activations import CommandActivation
 )
 def test_command_prefix_invalid_values(command: str, prefix: str) -> None:
   with pytest.raises(ValueError, match="The prefix"):
-    CommandActivation(**{"command": command, "prefix": prefix, "next-step": "test"})
+    CommandActivation.model_validate({"command": command, "prefix": prefix, "next-step": "test"})

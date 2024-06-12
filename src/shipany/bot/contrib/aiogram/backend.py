@@ -6,12 +6,11 @@ from aiogram.client.telegram import TelegramAPIServer
 from aiogram.dispatcher.dispatcher import Dispatcher
 
 from shipany.bot.config import BotConfig
+from shipany.bot.contrib.aiogram import router
 from shipany.bot.conversation.models import Flow
 
 
 def dispatcher(flow: Flow) -> Dispatcher:
-  from shipany.bot.contrib.aiogram import router
-
   dp = Dispatcher()
   dp.include_router(router.create(flow))
   return dp

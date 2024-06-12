@@ -4,7 +4,7 @@ import typing as t
 
 import pytest
 
-from shipany.bot.contrib.aiogram.context import Context
+from shipany.bot.contrib.aiogram.context import ExtendedContext
 from shipany.bot.contrib.aiogram.renders import template_from_context
 from shipany.bot.contrib.aiogram.renders.attributes_mapping import ATTRIBUTES_MAPPING, VariablesGetter
 
@@ -13,7 +13,7 @@ if t.TYPE_CHECKING:
 
 
 def test_getter_behaves_like_mapping(hello_message: Message) -> None:
-  ctx = VariablesGetter(Context(event=hello_message, captures={"test": "test"}))
+  ctx = VariablesGetter(ExtendedContext(event=hello_message, captures={"test": "test"}))
   assert ctx["test"] == "test"
   assert "test" in ctx
   assert len(ctx) == len(ATTRIBUTES_MAPPING) + 1
@@ -23,7 +23,7 @@ def test_getter_behaves_like_mapping(hello_message: Message) -> None:
 
 
 def test_getter_returns_only_text_value(hello_message: Message) -> None:
-  ctx = VariablesGetter(Context(event=hello_message))
+  ctx = VariablesGetter(ExtendedContext(event=hello_message))
   assert ctx["message"].text == hello_message.text
   with pytest.raises(AttributeError, match="message_id"):
     assert ctx["message"].message_id == hello_message.message_id
@@ -42,5 +42,5 @@ def test_getter_returns_only_text_value(hello_message: Message) -> None:
   ],
 )
 def test_getter_returns_user_attributes(telegram_event: TelegramObject, attribute: str, expected_result: str) -> None:
-  ctx = Context(event=telegram_event)
+  ctx = ExtendedContext(event=telegram_event)
   assert template_from_context("{{" + attribute + "}}", ctx) == expected_result
