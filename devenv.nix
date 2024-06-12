@@ -31,6 +31,7 @@
 
   scripts.tag-build.exec = ''
     git tag $1
+    uv pip install -e .  # update version in the venv
     version=$(shipany-bot-cli version)
     if [ "$version" != "$1" ]; then
       echo Commit changes first

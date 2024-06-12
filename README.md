@@ -1,15 +1,17 @@
-## shipany-bot-core
+# shipany-bot-core
 
-No-code framework for building chatbots with ease. Only Telegram is supported at the moment.
-
-### Features
-- No-code
-- Jinja2 templates
-- Conditional logic (jsonlogic)
+[![codecov](https://codecov.io/github/shipany-bot/shipany-bot-core/graph/badge.svg?token=7U2151PTKD)](https://codecov.io/github/shipany-bot/shipany-bot-core)
 
 Writing your first bot is as simple as writing a JSON file.
 
-Look at the example below:
+## Features
+
+- No-code
+- Jinja2 templates
+- Conditional logic (jsonlogic)
+- HTTP webhooks
+
+The example below shows a simple echo bot that replies with the same message it receives:
 
 ```json
 {
@@ -45,66 +47,75 @@ The bot schema is validated against the JSON schema, so you can be sure that you
 
 More examples can be found in the `examples` directory.
 
-### Installation
+## Installation
 
 Before you run the bot, you need to create a bot with Telegram BotFather and get the token.
 
 Once you have the token, paste it into `.test.env` file and rename it to `.env`.
 
 Then, install the package with 'cli' extra and run the bot:
+
 ```bash
-pip install 'shipany-bot-core[cli]'
+pip install git+https://github.com/shipany-bot/shipany-bot-core
 shipany-bot-cli run examples/echo-bot.json
 ```
 
 Go to Telegram and start chatting with your bot! Have fun!
 
 ## Schema
+
 The provided JSON schema describes a comprehensive model for defining conversation flows within a chatbot application. It includes definitions for various logical operations, conversation activations, steps, and actions. Here's a detailed breakdown:
 
 ### Root Schema
+
 The root schema object defines the overall structure of the conversation model and includes the following key properties:
 
-**$schema**: The URL of the schema definition.
-**name**: The name of the bot.
-**description**: A brief description of the bot's purpose.
-**version**: The version of the conversation description, supporting semantic versioning.
-**conversations**: An array of conversation objects, each defining a distinct conversation flow.
+- **$schema**: The URL of the schema definition.
+- **name**: The name of the bot.
+- **description**: A brief description of the bot's purpose.
+- **version**: The version of the conversation description, supporting semantic versioning.
+- **conversations**: An array of conversation objects, each defining a distinct conversation flow.
 
 ### Conversation Definition
+
 Each conversation is described by:
 
-**$id**: A unique identifier for the conversation.
-**activations**: A list of conditions that trigger the conversation steps.
-**steps**: A list of steps in the conversation, each representing an action or sequence of actions.
+- **$id**: A unique identifier for the conversation.
+- **activations**: A list of conditions that trigger the conversation steps.
+- **steps**: A list of steps in the conversation, each representing an action or sequence of actions.
 
 ### Activation Definitions
+
 Activations trigger specific steps within the conversation flow. There are two main types:
 
-**CommandActivation**: Triggered by specific commands, such as "/start" or "!help".
-**EventActivation**: Triggered by various events, such as message reception or user actions.
+- **CommandActivation**: Triggered by specific commands, such as "/start" or "!help".
+- **EventActivation**: Triggered by various events, such as message reception or user actions.
+- **WebhookActivation**: Triggered by an HTTP request to a pre-defined webhook.
 
 ### Step Definition
+
 Each step in a conversation includes:
 
-**$id**: A unique identifier for the step.
-**actions**: An array of actions to be performed in the step, such as sending messages or transitioning to another step.
+- **$id**: A unique identifier for the step.
+- **actions**: An array of actions to be performed in the step, such as sending messages or transitioning to another step.
 
 ### Action Definitions
+
 Actions define what happens at each step. The schema includes several action types:
 
-**MessageAction@1**: Sends a message.
-**TransitionAction@1**: Transitions to another step.
-**StateAction@1**: Modifies the state.
-**HttpRequest@1**: Sends an HTTP request and captures the response.
-**JsonPathAction@1**: Extracts data from a JSON response.
+- **MessageAction@1**: Sends a message.
+- **TransitionAction@1**: Transitions to another step.
+- **StateAction@1**: Modifies the state.
+- **HttpRequest@1**: Sends an HTTP request and captures the response.
+- **JsonPathAction@1**: Extracts data from a JSON response.
 
 ### Operation Definitions
+
 Logical operations allow for complex conditions within the activations and actions. The schema supports:
 
-**EqualsOperation**: Checks for equality.
-**InOperation**: Checks if a value is within a list.
-**AndOperation**: Logical AND operation.
-**OrOperation**: Logical OR operation.
-**NotOperation**: Logical NOT operation.
-**VarOperation**: References a variable.
+- **EqualsOperation**: Checks for equality.
+- **InOperation**: Checks if a value is within a list.
+- **AndOperation**: Logical AND operation.
+- **OrOperation**: Logical OR operation.
+- **NotOperation**: Logical NOT operation.
+- **VarOperation**: References a variable.
