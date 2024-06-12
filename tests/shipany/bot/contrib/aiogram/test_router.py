@@ -10,15 +10,9 @@ from shipany.bot.conversation.loader import load
 from shipany.bot.conversation.models.activations import Activation, CommandActivation, EventActivation
 from shipany.bot.conversation.models.flow import Flow
 from shipany.bot.conversation.models.steps import Step
-from shipany.bot.runtime.context import Context
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message
-
-
-@pytest.fixture()
-def default_context() -> Context:
-  return Context()
 
 
 def test_create_nested_router_with_no_conversations() -> None:

@@ -12,8 +12,8 @@ if t.TYPE_CHECKING:
   from aiogram.types import Message, TelegramObject
 
 
-def test_getter_behaves_like_mapping(hello_message: Message) -> None:
-  ctx = VariablesGetter(ExtendedContext(event=hello_message, captures={"test": "test"}))
+def test_getter_behaves_like_mapping(hi_message: Message) -> None:
+  ctx = VariablesGetter(ExtendedContext(event=hi_message, captures={"test": "test"}))
   assert ctx["test"] == "test"
   assert "test" in ctx
   assert len(ctx) == len(ATTRIBUTES_MAPPING) + 1
