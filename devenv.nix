@@ -37,8 +37,6 @@
       git tag --delete $1
       exit 1
     fi
-    mkdir -p schemata/$version
-    shipany-bot-cli schema > schemata/$version/schema.json
   '';
 
   scripts.package-wheel.exec = ''
