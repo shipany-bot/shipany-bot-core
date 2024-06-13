@@ -3,21 +3,20 @@ import typing as t
 from contextlib import contextmanager
 
 import inject
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from shipany.bot.runtime.captures import CapturesProvider
-from shipany.bot.runtime.secrets import SecretsProvider
+from shipany.bot.providers.secrets import SecretsProvider
 
 logger = logging.getLogger(__name__)
 
 
-class Context(BaseModel):
-  captures: t.MutableMapping[str, str] = Field(default_factory=dict)
+class RuntimeContext(BaseModel):
   secrets: t.Mapping[str, str] = Field(frozen=True, default_factory=dict)
+  model_config = ConfigDict(extra="forbid", frozen=True)
 
 
 @contextmanager
-def context() -> t.Iterator[Context]:
+def runtime_context() -> t.Iterator[RuntimeContext]:
   try:
     secrets_provider = inject.instance(SecretsProvider)
   except inject.InjectorException:  # pragma: no cover
@@ -26,18 +25,6 @@ def context() -> t.Iterator[Context]:
     )
     raise
 
-  try:
-    captures_provider = inject.instance(CapturesProvider)
-  except inject.InjectorException:  # pragma: no cover
-    logger.warning(
-      "CapturesProvider is not found in the injector. Have you forgotten to call default_runtime_injections?"
-    )
-    raise
+  ctx = RuntimeContext(secrets=secrets_provider.dump())
 
-  ctx = Context(captures=captures_provider.dump(), secrets=secrets_provider.dump())
-
-  logger.info("Context is opened with captures: %s, and secrets: %s", ctx.captures, ctx.secrets)
   yield ctx
-  logger.info("Context is closed with captures: %s", ctx.captures)
-
-  captures_provider.load(ctx.captures)

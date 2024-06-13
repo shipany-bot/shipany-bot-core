@@ -11,7 +11,7 @@ from aiogram import types as aiogram_types
 from aiogram.types.reaction_type_emoji import ReactionTypeEmoji
 
 if t.TYPE_CHECKING:
-  from shipany.bot.contrib.aiogram.context import ExtendedContext
+  from shipany.bot.contrib.aiogram.context import BotContext
 
 
 logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ ATTRIBUTES_MAPPING: t.Final[dict[str, ProxyEventCallable]] = {
 
 
 class VariablesGetter(Mapping[str, t.Any]):
-  def __init__(self: t.Self, ctx: ExtendedContext) -> None:
+  def __init__(self: t.Self, ctx: BotContext) -> None:
     self._ctx = ctx
 
   def __getitem__(self: t.Self, key: str) -> t.Any:  # noqa: ANN401
@@ -70,7 +70,7 @@ class VariablesGetter(Mapping[str, t.Any]):
       return proxy(self._ctx.event)
 
     if key == "secrets":
-      return self._ctx.secrets
+      return self._ctx.runtime.secrets
 
     if key in self._ctx.captures:
       logger.info("Fetching %s from captures", key)

@@ -2,8 +2,9 @@ import pytest
 from aiogram.types import TelegramObject
 
 from shipany.bot.actions.transition_action.v1 import TransitionAction
-from shipany.bot.contrib.aiogram.context import ExtendedContext
-from shipany.bot.contrib.aiogram.process.transition_action.v1 import Continue, GoToStep, process
+from shipany.bot.contrib.aiogram.context import bot_context
+from shipany.bot.contrib.aiogram.process.transition_action.v1 import process
+from shipany.bot.conversation.handlers.actions import Continue, GoToStep
 
 
 @pytest.mark.parametrize(
@@ -23,13 +24,13 @@ from shipany.bot.contrib.aiogram.process.transition_action.v1 import Continue, G
 )
 @pytest.mark.asyncio()
 async def test_transition_action_to_next_step(action: TransitionAction, expected_step_id: str) -> None:
-  ctx = ExtendedContext(event=TelegramObject())
-  result = process(ctx, action)
-  match result:
-    case GoToStep(step_id=step_id):
-      assert step_id == expected_step_id
-    case _:  # pragma: no cover
-      pytest.fail("Unexpected result")
+  with bot_context(event=TelegramObject()) as ctx:
+    result = process(ctx, action)
+    match result:
+      case GoToStep(step_id=step_id):
+        assert step_id == expected_step_id
+      case _:  # pragma: no cover
+        pytest.fail("Unexpected result")
 
 
 @pytest.mark.parametrize(
@@ -40,10 +41,10 @@ async def test_transition_action_to_next_step(action: TransitionAction, expected
 )
 @pytest.mark.asyncio()
 async def test_no_transition_action_to_next_step(action: TransitionAction) -> None:
-  ctx = ExtendedContext(event=TelegramObject())
-  result = process(ctx, action)
-  match result:
-    case Continue():
-      pass
-    case _:  # pragma: no cover
-      pytest.fail("Unexpected result")
+  with bot_context(event=TelegramObject()) as ctx:
+    result = process(ctx, action)
+    match result:
+      case Continue():
+        pass
+      case _:  # pragma: no cover
+        pytest.fail("Unexpected result")

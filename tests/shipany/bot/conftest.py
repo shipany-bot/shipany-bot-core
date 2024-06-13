@@ -7,9 +7,9 @@ import pytest
 def _set_runtime_injections() -> None:
   import inject
 
-  from shipany.bot.runtime.bindings import default_runtime_injections
+  from shipany.bot.bindings import default_runtime_bindings
 
-  inject.clear_and_configure(default_runtime_injections)
+  inject.clear_and_configure(default_runtime_bindings)
 
 
 @pytest.fixture()

@@ -3,7 +3,7 @@ from aiogram.types import TelegramObject
 
 from shipany.bot import errors
 from shipany.bot.actions.message_action.v1 import MessageAction
-from shipany.bot.contrib.aiogram.context import ExtendedContext
+from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.factories.send_message import construct_from
 
 
@@ -19,13 +19,11 @@ from shipany.bot.contrib.aiogram.factories.send_message import construct_from
   ],
 )
 def test_send_message_is_constructed(telegram_event: TelegramObject, action: MessageAction) -> None:
-  method = construct_from(ExtendedContext(event=telegram_event), action)
-  assert method
+  with bot_context(event=telegram_event) as ctx:
+    method = construct_from(ctx, action)
+    assert method
 
 
 def test_send_message_is_not_constructed() -> None:
-  with pytest.raises(errors.NotImplementedError):
-    construct_from(
-      ExtendedContext(event=TelegramObject()),
-      MessageAction.model_validate({"name": "MessageAction@1", "type": "reply", "content": "Hello"}),
-    )
+  with pytest.raises(errors.NotImplementedError), bot_context(event=TelegramObject()) as ctx:
+    construct_from(ctx, MessageAction.model_validate({"name": "MessageAction@1", "type": "reply", "content": "Hello"}))

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 async def handler(activation: Activation, steps: Steps, event: TelegramObject) -> None:
-  with context.context(event) as ctx:
+  with context.bot_context(event) as ctx:
     try:
       handler = ActivationHandler(ctx, activation)
       await handler(steps)

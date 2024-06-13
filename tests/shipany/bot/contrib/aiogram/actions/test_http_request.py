@@ -4,15 +4,22 @@ import typing as t
 
 import pytest
 from aiogram.types import TelegramObject
+from pydantic import BaseModel
 
 from shipany.bot.actions.http_request.v1 import HttpRequest
-from shipany.bot.contrib.aiogram.context import ExtendedContext
+from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.http_request.v1 import process
 from shipany.bot.conversation.handlers.actions import Continue
 
 if t.TYPE_CHECKING:
   from pydantic import JsonValue
   from pytest_httpx import HTTPXMock
+
+
+class MockedResponse(BaseModel):
+  url: str
+  status_code: int = 200
+  text: str
 
 
 @pytest.mark.parametrize(
@@ -59,12 +66,12 @@ async def test_state_action(
   response: dict[str, JsonValue],
   httpx_mock: HTTPXMock,
 ) -> None:
-  httpx_mock.add_response(**response)
-  ctx = ExtendedContext(captures=captures_before, event=TelegramObject())
-  action = HttpRequest(**raw_action)
-  result = await process(ctx, action)
-  match result:
-    case Continue():
-      assert ctx.captures == captures_after
-    case _:  # pragma: no cover
-      pytest.fail("Unexpected result")
+  httpx_mock.add_response(**MockedResponse.model_validate(response).model_dump())
+  with bot_context(event=TelegramObject(), captures=captures_before) as ctx:
+    action = HttpRequest.model_validate(raw_action)
+    result = await process(ctx, action)
+    match result:
+      case Continue():
+        assert ctx.captures == captures_after
+      case _:  # pragma: no cover
+        pytest.fail("Unexpected result")

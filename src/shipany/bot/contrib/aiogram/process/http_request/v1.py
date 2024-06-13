@@ -13,7 +13,7 @@ from shipany.bot.conversation.handlers.actions import Continue
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.http_request.v1 import HttpRequest
-  from shipany.bot.contrib.aiogram.context import ExtendedContext
+  from shipany.bot.contrib.aiogram.context import BotContext
 
 
 class LazyJinjaContext(JinjaContext):
@@ -53,7 +53,7 @@ def template_from_response(template: str, response: httpx.Response) -> str:
   return env.from_string(template).render()
 
 
-async def process(ctx: ExtendedContext, action: HttpRequest) -> Continue:
+async def process(ctx: BotContext, action: HttpRequest) -> Continue:
   async with httpx.AsyncClient() as client:
     response = await client.request(
       method=action.method,

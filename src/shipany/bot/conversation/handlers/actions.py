@@ -8,8 +8,8 @@ from collections.abc import Awaitable  # noqa: TCH003
 
 from pydantic import BaseModel, ConfigDict, ValidationError, validate_call
 
+from shipany.bot.contrib.aiogram.context import BotContext  # noqa: TCH001
 from shipany.bot.conversation.models.action import BaseAction  # noqa: TCH001
-from shipany.bot.runtime.context import Context  # noqa: TCH001
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ def _find_action_module(module_name: str, class_name: str, class_version: str) -
 
 @t.runtime_checkable
 class ModuleWithProcessFunction(t.Protocol):
-  def process(self: t.Self, ctx: Context, action: BaseModel) -> DispatchedResult: ...
+  def process(self: t.Self, ctx: BotContext, action: BaseModel) -> DispatchedResult: ...
 
 
 def _func_process_module(module_name: str, class_name: str, class_version: str) -> ModuleWithProcessFunction:
@@ -100,7 +100,7 @@ def _func_process_module(module_name: str, class_name: str, class_version: str) 
 
 
 @validate_call
-async def handle(action: BaseAction, ctx: Context) -> DispatchedResult:
+async def handle(action: BaseAction, ctx: BotContext) -> DispatchedResult:
   class_name, class_version = _split_action_name(action.name)
   module_name = _camel_to_snake(class_name)
 
