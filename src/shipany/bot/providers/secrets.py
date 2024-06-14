@@ -1,13 +1,14 @@
 import typing as t
-from abc import ABC, abstractmethod
+from contextlib import contextmanager
 
 
-class SecretsProvider(ABC):
-  @abstractmethod
-  def dump(self: t.Self) -> t.Mapping[str, str]:
+class SecretsProvider:
+  @contextmanager
+  def snapshot(self: t.Self) -> t.Iterator[t.Mapping[str, str]]:
     raise NotImplementedError
 
 
 class StubSecretsProvider:
-  def dump(self: t.Self) -> t.Mapping[str, str]:
-    return {}
+  @contextmanager
+  def snapshot(self: t.Self) -> t.Iterator[t.Mapping[str, str]]:
+    yield {}

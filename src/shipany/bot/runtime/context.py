@@ -25,6 +25,5 @@ def runtime_context() -> t.Iterator[RuntimeContext]:
     )
     raise
 
-  ctx = RuntimeContext(secrets=secrets_provider.dump())
-
-  yield ctx
+  with secrets_provider.snapshot() as snapshot:
+    yield RuntimeContext(secrets=snapshot)

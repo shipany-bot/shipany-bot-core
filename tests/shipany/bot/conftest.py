@@ -1,15 +1,48 @@
-import json
+from __future__ import annotations
 
+import json
+import typing as t
+
+import inject
 import pytest
+
+from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
+from shipany.bot.providers.secrets import SecretsProvider, StubSecretsProvider
+
+BinderCallable = t.Callable[[inject.Binder], None]
+
+
+@pytest.fixture()
+def captures_provider() -> BinderCallable:
+  def _captures_provider(binder: inject.Binder) -> None:
+    binder.bind(CapturesProvider, InMemoryCapturesProvider())
+
+  return _captures_provider
+
+
+@pytest.fixture()
+def secrets_provider() -> BinderCallable:
+  def _secrets_provider(binder: inject.Binder) -> None:
+    binder.bind(SecretsProvider, StubSecretsProvider())
+
+  return _secrets_provider
+
+
+@pytest.fixture()
+def all_bindings(
+  captures_provider: BinderCallable,
+  secrets_provider: BinderCallable,
+) -> BinderCallable:
+  def _all_bindings(binder: inject.Binder) -> None:
+    captures_provider(binder)
+    secrets_provider(binder)
+
+  return _all_bindings
 
 
 @pytest.fixture(autouse=True)
-def _set_runtime_injections() -> None:
-  import inject
-
-  from shipany.bot.bindings import default_runtime_bindings
-
-  inject.clear_and_configure(default_runtime_bindings)
+def _runtime_injections(all_bindings: BinderCallable) -> None:
+  inject.configure(all_bindings, clear=True, allow_override=True)
 
 
 @pytest.fixture()

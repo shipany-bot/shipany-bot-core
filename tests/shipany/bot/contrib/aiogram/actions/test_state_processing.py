@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import typing as t
+
+import inject
 import pytest
 from aiogram.types import TelegramObject
 
@@ -7,10 +10,22 @@ from shipany.bot.actions.state_action.v1 import StateAction
 from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.state_action.v1 import process
 from shipany.bot.conversation.handlers.actions import Continue
+from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
+
+BinderCallable = t.Callable[[inject.Binder], None]
+
+
+@pytest.fixture(autouse=True)
+def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
+  def _runtime_bindings(binder: inject.Binder) -> None:
+    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
+    binder.bind(CapturesProvider, captures_provider)
+
+  return _runtime_bindings
 
 
 @pytest.mark.parametrize(
-  ("action", "captures_before", "captures_after"),
+  ("action", "setup_captures", "captures_after"),
   [
     (
       StateAction.model_validate({"name": "StateAction@1", "type": "store", "key": "hello", "value": None}),
@@ -25,10 +40,8 @@ from shipany.bot.conversation.handlers.actions import Continue
   ],
 )
 @pytest.mark.asyncio()
-async def test_state_action(
-  action: StateAction, captures_before: dict[str, str], captures_after: dict[str, str]
-) -> None:
-  with bot_context(captures=captures_before, event=TelegramObject()) as ctx:
+async def test_state_action(action: StateAction, captures_after: dict[str, str]) -> None:
+  with bot_context(event=TelegramObject()) as ctx:
     result = process(ctx, action)
     match result:
       case Continue():

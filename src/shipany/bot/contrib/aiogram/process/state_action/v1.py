@@ -14,7 +14,7 @@ def process(ctx: BotContext, action: StateAction) -> Continue:
   match action_type:
     case SupportedStateActionTypes.store:
       if action.value is None:
-        ctx.captures.pop(action.key, None)
+        del ctx.captures[action.key]
         logger.info(f"Removed key '{action.key}'")
       else:
         ctx.captures[action.key] = template_from_context(action.value, ctx)

@@ -17,4 +17,5 @@ async def test_context_changes() -> None:
     process(ctx, action)
 
   provider: CapturesProvider = inject.instance(CapturesProvider)
-  assert provider.dump() == {"hello": "1"}
+  with provider.snapshot() as captures:
+    assert captures == {"hello": "1"}

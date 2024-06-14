@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import typing as t
 
+import inject
 import pytest
 from aiogram.types import TelegramObject
 from pydantic import BaseModel
@@ -10,6 +11,7 @@ from shipany.bot.actions.http_request.v1 import HttpRequest
 from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.http_request.v1 import process
 from shipany.bot.conversation.handlers.actions import Continue
+from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
 
 if t.TYPE_CHECKING:
   from pydantic import JsonValue
@@ -22,8 +24,20 @@ class MockedResponse(BaseModel):
   text: str
 
 
+BinderCallable = t.Callable[[inject.Binder], None]
+
+
+@pytest.fixture(autouse=True)
+def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
+  def _runtime_bindings(binder: inject.Binder) -> None:
+    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
+    binder.bind(CapturesProvider, captures_provider)
+
+  return _runtime_bindings
+
+
 @pytest.mark.parametrize(
-  ("captures_before", "raw_action", "captures_after", "response"),
+  ("setup_captures", "raw_action", "captures_after", "response"),
   [
     (
       {},
@@ -61,13 +75,12 @@ class MockedResponse(BaseModel):
 @pytest.mark.asyncio()
 async def test_state_action(
   raw_action: dict[str, JsonValue],
-  captures_before: dict[str, str],
   captures_after: dict[str, str],
   response: dict[str, JsonValue],
   httpx_mock: HTTPXMock,
 ) -> None:
   httpx_mock.add_response(**MockedResponse.model_validate(response).model_dump())
-  with bot_context(event=TelegramObject(), captures=captures_before) as ctx:
+  with bot_context(event=TelegramObject()) as ctx:
     action = HttpRequest.model_validate(raw_action)
     result = await process(ctx, action)
     match result:
