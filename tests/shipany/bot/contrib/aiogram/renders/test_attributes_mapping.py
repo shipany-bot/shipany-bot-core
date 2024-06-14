@@ -4,9 +4,9 @@ import typing as t
 
 import pytest
 
-from shipany.bot.contrib.aiogram.renders import template_from_context
-from shipany.bot.contrib.aiogram.renders.attributes_mapping import VariablesGetter
 from shipany.bot.conversation.context import conversation_context
+from shipany.bot.conversation.renders.attributes_mapping import VariablesGetter
+from shipany.bot.conversation.renders.jinja_env import template_from_context
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message, TelegramObject

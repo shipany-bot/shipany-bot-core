@@ -3,8 +3,8 @@ from __future__ import annotations
 import logging
 import typing as t
 
-from shipany.bot.contrib.aiogram.renders.context_proxy import proxy
 from shipany.bot.conversation.handlers.actions import Continue, GoToStep
+from shipany.bot.conversation.renders.context_proxy import proxy
 from shipany.bot.jsonlogic import apply
 
 if t.TYPE_CHECKING:

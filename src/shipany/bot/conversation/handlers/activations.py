@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import typing as t
 
-from shipany.bot.contrib.aiogram.renders.context_proxy import proxy
 from shipany.bot.conversation import errors
 from shipany.bot.conversation.handlers.actions import (
   AwaitObjectAndContinue,
@@ -13,6 +12,7 @@ from shipany.bot.conversation.handlers.actions import (
   Terminate,
   handle,
 )
+from shipany.bot.conversation.renders.context_proxy import proxy
 from shipany.bot.jsonlogic import JsonLogic, apply
 
 if t.TYPE_CHECKING:

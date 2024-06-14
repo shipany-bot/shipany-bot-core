@@ -6,7 +6,7 @@ from functools import partial
 from jinja2 import BaseLoader, Environment
 from jinja2.runtime import Context as JinjaContext
 
-from .attributes_mapping import VariablesGetter
+from shipany.bot.conversation.renders.attributes_mapping import VariablesGetter
 
 if t.TYPE_CHECKING:
   from shipany.bot.conversation.context import ConversationContext

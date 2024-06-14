@@ -2,9 +2,9 @@ import logging
 import typing as t
 
 from shipany.bot.actions.state_action.v1 import StateAction, SupportedStateActionTypes
-from shipany.bot.contrib.aiogram.renders.jinja_env import template_from_context
 from shipany.bot.conversation.context import ConversationContext
 from shipany.bot.conversation.handlers.actions import Continue
+from shipany.bot.conversation.renders.jinja_env import template_from_context
 
 logger = logging.getLogger(__name__)
 

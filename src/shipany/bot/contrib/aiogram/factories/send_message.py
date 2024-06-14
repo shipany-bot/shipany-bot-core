@@ -6,8 +6,8 @@ from aiogram.types import Message, MessageReactionUpdated
 
 from shipany.bot import errors
 from shipany.bot.actions.message_action.v1 import MessageAction, SupportedMessageActionTypes
-from shipany.bot.contrib.aiogram import renders
 from shipany.bot.conversation.context import ConversationContext
+from shipany.bot.conversation.renders.jinja_env import template_from_context
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +17,10 @@ def construct_from(ctx: ConversationContext, action: MessageAction) -> SendMessa
     case MessageReactionUpdated(chat=chat, _bot=_bot):
       if action.action_type != SupportedMessageActionTypes.answer:
         logger.error(f"Only `answer` is supported. Instead {action.action_type} was provided.")
-      content = renders.template_from_context(action.content, ctx, safe=False)
+      content = template_from_context(action.content, ctx, safe=False)
       return SendMessage(chat_id=chat.id, text=content).as_(_bot)
     case Message():
-      content = renders.template_from_context(action.content, ctx, safe=False)
+      content = template_from_context(action.content, ctx, safe=False)
       match action.action_type:
         case SupportedMessageActionTypes.reply:
           return ctx.event.reply(content)

@@ -6,8 +6,8 @@ import typing as t
 
 from jsonpath_ng import jsonpath, parse
 
-from shipany.bot.contrib.aiogram.renders.jinja_env import template_from_context
 from shipany.bot.conversation.handlers.actions import Continue, Terminate
+from shipany.bot.conversation.renders.jinja_env import template_from_context
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.json_path_action.v1 import JsonPathAction
