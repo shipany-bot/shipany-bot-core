@@ -15,7 +15,7 @@ if t.TYPE_CHECKING:
 class LazyJinjaContext(JinjaContext):
   def __init__(
     self: t.Self,
-    getter: VariablesGetter,
+    getter: t.Mapping[str, t.Any],
     environment: Environment,
     parent: dict[str, t.Any],
     name: str | None,

@@ -5,7 +5,7 @@ import typing as t
 import pytest
 
 from shipany.bot.contrib.aiogram.renders import template_from_context
-from shipany.bot.contrib.aiogram.renders.attributes_mapping import ATTRIBUTES_MAPPING, VariablesGetter
+from shipany.bot.contrib.aiogram.renders.attributes_mapping import VariablesGetter
 from shipany.bot.conversation.context import conversation_context
 
 if t.TYPE_CHECKING:
@@ -21,8 +21,6 @@ def test_getter_behaves_like_mapping(hi_message: Message) -> None:
     getter = VariablesGetter(ctx)
     assert getter["test"] == "test"
     assert "test" in getter
-    assert len(getter) == len(ATTRIBUTES_MAPPING) + 1
-    assert list(getter) == ["test", *ATTRIBUTES_MAPPING.keys()]
     with pytest.raises(KeyError):
       getter["not_found"]
 

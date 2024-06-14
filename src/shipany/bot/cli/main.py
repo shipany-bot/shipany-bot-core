@@ -15,7 +15,7 @@ from pydantic import HttpUrl, TypeAdapter, ValidationError
 from pydantic_core import Url
 
 from shipany.bot import loader
-from shipany.bot.bindings import default_runtime_bindings
+from shipany.bot.bindings import default_bindings
 from shipany.bot.conversation.models import Flow
 from shipany.bot.providers.secrets import SecretsProvider
 from shipany.bot.web import server
@@ -66,7 +66,7 @@ def run(  # noqa: C901
       raise typer.Exit(1)
 
   def configure_injections(binder: inject.Binder) -> None:
-    binder.install(default_runtime_bindings)
+    default_bindings(binder)
 
     if secret:
 
