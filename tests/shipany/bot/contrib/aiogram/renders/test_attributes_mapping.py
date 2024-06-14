@@ -55,4 +55,4 @@ def test_getter_returns_secrets(hello_message: Message) -> None:
 )
 def test_getter_returns_user_attributes(telegram_event: TelegramObject, attribute: str, expected_result: str) -> None:
   with conversation_context(event=telegram_event) as ctx:
-    assert template_from_context("{{" + attribute + "}}", ctx) == expected_result
+    assert template_from_context("{{" + attribute + "}}", ctx, safe=False) == expected_result

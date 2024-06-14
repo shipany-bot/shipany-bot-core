@@ -37,12 +37,12 @@ def _jinja_context_from(ctx: ConversationContext) -> type[JinjaContext]:
   return t.cast(type[JinjaContext], partial(LazyJinjaContext, VariablesGetter(ctx)))
 
 
-def render_in_context(ctx: ConversationContext) -> Environment:
-  jinja_env = Environment(loader=BaseLoader(), autoescape=False)  # noqa: S701
+def render_in_context(ctx: ConversationContext, *, safe: bool) -> Environment:
+  jinja_env = Environment(loader=BaseLoader(), autoescape=not safe)  # noqa: S701
   jinja_env.context_class = _jinja_context_from(ctx)
   return jinja_env
 
 
-def template_from_context(template: str, ctx: ConversationContext) -> str:
-  env = render_in_context(ctx)
+def template_from_context(template: str, ctx: ConversationContext, *, safe: bool) -> str:
+  env = render_in_context(ctx, safe=safe)
   return env.from_string(template).render()

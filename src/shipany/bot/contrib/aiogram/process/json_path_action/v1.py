@@ -20,7 +20,7 @@ def process(ctx: ConversationContext, action: JsonPathAction) -> Continue | Term
   if not action.captures:
     return Continue()
 
-  value = template_from_context(action.input_, ctx)
+  value = template_from_context(action.input_, ctx, safe=True)
   jsonpath_expr: jsonpath.Child = parse(action.expression)
   try:
     json_value = json.loads(value)

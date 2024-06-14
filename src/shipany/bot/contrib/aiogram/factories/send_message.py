@@ -17,10 +17,10 @@ def construct_from(ctx: ConversationContext, action: MessageAction) -> SendMessa
     case MessageReactionUpdated(chat=chat, _bot=_bot):
       if action.action_type != SupportedMessageActionTypes.answer:
         logger.error(f"Only `answer` is supported. Instead {action.action_type} was provided.")
-      content = renders.template_from_context(action.content, ctx)
+      content = renders.template_from_context(action.content, ctx, safe=False)
       return SendMessage(chat_id=chat.id, text=content).as_(_bot)
     case Message():
-      content = renders.template_from_context(action.content, ctx)
+      content = renders.template_from_context(action.content, ctx, safe=False)
       match action.action_type:
         case SupportedMessageActionTypes.reply:
           return ctx.event.reply(content)

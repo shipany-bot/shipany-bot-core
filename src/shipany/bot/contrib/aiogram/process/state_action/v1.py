@@ -17,7 +17,7 @@ def process(ctx: ConversationContext, action: StateAction) -> Continue:
         del ctx.captures[action.key]
         logger.info(f"Removed key '{action.key}'")
       else:
-        ctx.captures[action.key] = template_from_context(action.value, ctx)
+        ctx.captures[action.key] = template_from_context(action.value, ctx, safe=True)
         logger.info(f"Stored value '{ctx.captures[action.key]}' in key '{action.key}'")
       return Continue()
   t.assert_never(action_type)
