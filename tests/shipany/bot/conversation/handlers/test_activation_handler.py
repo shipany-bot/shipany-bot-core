@@ -1,7 +1,6 @@
 import typing as t
 
 import pytest
-from aiogram.types import TelegramObject
 
 from shipany.bot.conversation import errors
 from shipany.bot.conversation.context import ConversationContext, conversation_context
@@ -13,7 +12,7 @@ from shipany.bot.conversation.models.flow import Flow
 
 @pytest.fixture()
 def default_context() -> t.Iterator[ConversationContext]:
-  with conversation_context(TelegramObject()) as ctx:
+  with conversation_context() as ctx:
     yield ctx
 
 

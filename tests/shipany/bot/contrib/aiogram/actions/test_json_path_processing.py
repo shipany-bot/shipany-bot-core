@@ -59,7 +59,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
 @pytest.mark.asyncio()
 async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[str, str]) -> None:
   action = JsonPathAction(**raw_action)
-  with conversation_context(event=TelegramObject()) as ctx:
+  with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case Continue():

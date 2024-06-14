@@ -3,7 +3,6 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from aiogram.types import TelegramObject
 from pydantic import BaseModel
 
 from shipany.bot.actions.http_request.v1 import HttpRequest
@@ -66,7 +65,7 @@ async def test_state_action(
   httpx_mock: HTTPXMock,
 ) -> None:
   httpx_mock.add_response(**MockedResponse.model_validate(response).model_dump())
-  with conversation_context(event=TelegramObject()) as ctx:
+  with conversation_context() as ctx:
     action = HttpRequest.model_validate(raw_action)
     result = await process(ctx, action)
     match result:

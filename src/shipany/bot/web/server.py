@@ -4,7 +4,6 @@ import logging
 import typing as t
 
 import uvicorn
-from aiogram.types import TelegramObject
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
@@ -89,7 +88,7 @@ async def _hook_endpoint(
     e.status_code = webhook.status_code_error
     raise e from None
 
-  with conversation_context(TelegramObject()) as ctx:
+  with conversation_context() as ctx:
     try:
       handler = ActivationHandler(ctx, activation)
       await handler(conversation.steps)

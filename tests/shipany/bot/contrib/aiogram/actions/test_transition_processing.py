@@ -1,5 +1,4 @@
 import pytest
-from aiogram.types import TelegramObject
 
 from shipany.bot.actions.transition_action.v1 import TransitionAction
 from shipany.bot.contrib.aiogram.process.transition_action.v1 import process
@@ -24,7 +23,7 @@ from shipany.bot.conversation.handlers.actions import Continue, GoToStep
 )
 @pytest.mark.asyncio()
 async def test_transition_action_to_next_step(action: TransitionAction, expected_step_id: str) -> None:
-  with conversation_context(event=TelegramObject()) as ctx:
+  with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case GoToStep(step_id=step_id):
@@ -41,7 +40,7 @@ async def test_transition_action_to_next_step(action: TransitionAction, expected
 )
 @pytest.mark.asyncio()
 async def test_no_transition_action_to_next_step(action: TransitionAction) -> None:
-  with conversation_context(event=TelegramObject()) as ctx:
+  with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case Continue():

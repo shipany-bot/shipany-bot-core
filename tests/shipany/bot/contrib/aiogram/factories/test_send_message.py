@@ -25,5 +25,5 @@ def test_send_message_is_constructed(telegram_event: TelegramObject, action: Mes
 
 
 def test_send_message_is_not_constructed() -> None:
-  with pytest.raises(errors.NotImplementedError), conversation_context(event=TelegramObject()) as ctx:
+  with pytest.raises(errors.NotImplementedError), conversation_context() as ctx:
     construct_from(ctx, MessageAction.model_validate({"name": "MessageAction@1", "type": "reply", "content": "Hello"}))
