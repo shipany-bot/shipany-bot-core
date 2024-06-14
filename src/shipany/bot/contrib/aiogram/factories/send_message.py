@@ -7,12 +7,12 @@ from aiogram.types import Message, MessageReactionUpdated
 from shipany.bot import errors
 from shipany.bot.actions.message_action.v1 import MessageAction, SupportedMessageActionTypes
 from shipany.bot.contrib.aiogram import renders
-from shipany.bot.contrib.aiogram.context import BotContext
+from shipany.bot.conversation.context import ConversationContext
 
 logger = logging.getLogger(__name__)
 
 
-def construct_from(ctx: BotContext, action: MessageAction) -> SendMessage:
+def construct_from(ctx: ConversationContext, action: MessageAction) -> SendMessage:
   match ctx.event:
     case MessageReactionUpdated(chat=chat, _bot=_bot):
       if action.action_type != SupportedMessageActionTypes.answer:

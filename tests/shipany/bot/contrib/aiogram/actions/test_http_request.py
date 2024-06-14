@@ -7,8 +7,8 @@ from aiogram.types import TelegramObject
 from pydantic import BaseModel
 
 from shipany.bot.actions.http_request.v1 import HttpRequest
-from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.http_request.v1 import process
+from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.handlers.actions import Continue
 
 if t.TYPE_CHECKING:
@@ -66,7 +66,7 @@ async def test_state_action(
   httpx_mock: HTTPXMock,
 ) -> None:
   httpx_mock.add_response(**MockedResponse.model_validate(response).model_dump())
-  with bot_context(event=TelegramObject()) as ctx:
+  with conversation_context(event=TelegramObject()) as ctx:
     action = HttpRequest.model_validate(raw_action)
     result = await process(ctx, action)
     match result:

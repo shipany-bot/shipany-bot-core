@@ -16,7 +16,7 @@ from shipany.bot.conversation.handlers.actions import (
 from shipany.bot.jsonlogic import JsonLogic, apply
 
 if t.TYPE_CHECKING:
-  from shipany.bot.contrib.aiogram.context import BotContext
+  from shipany.bot.conversation.context import ConversationContext
   from shipany.bot.conversation.models.action import BaseAction
   from shipany.bot.conversation.models.activations import Activation
   from shipany.bot.conversation.models.steps import Step, Steps
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class ActivationHandler:
-  def __init__(self: t.Self, context: BotContext, activation: Activation) -> None:
+  def __init__(self: t.Self, context: ConversationContext, activation: Activation) -> None:
     self.begin_with_step_id = activation.next_step
     self.context = context
     if activation.condition:

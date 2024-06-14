@@ -11,12 +11,12 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.json_path_action.v1 import JsonPathAction
-  from shipany.bot.contrib.aiogram.context import BotContext
+  from shipany.bot.conversation.context import ConversationContext
 
 logger = logging.getLogger(__name__)
 
 
-def process(ctx: BotContext, action: JsonPathAction) -> Continue | Terminate:
+def process(ctx: ConversationContext, action: JsonPathAction) -> Continue | Terminate:
   if not action.captures:
     return Continue()
 

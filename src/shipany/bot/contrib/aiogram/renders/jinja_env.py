@@ -9,7 +9,7 @@ from jinja2.runtime import Context as JinjaContext
 from .attributes_mapping import VariablesGetter
 
 if t.TYPE_CHECKING:
-  from shipany.bot.contrib.aiogram.context import BotContext
+  from shipany.bot.conversation.context import ConversationContext
 
 
 class LazyJinjaContext(JinjaContext):
@@ -33,16 +33,16 @@ class LazyJinjaContext(JinjaContext):
       return super().resolve_or_missing(key)
 
 
-def _jinja_context_from(ctx: BotContext) -> type[JinjaContext]:
+def _jinja_context_from(ctx: ConversationContext) -> type[JinjaContext]:
   return t.cast(type[JinjaContext], partial(LazyJinjaContext, VariablesGetter(ctx)))
 
 
-def render_in_context(ctx: BotContext) -> Environment:
+def render_in_context(ctx: ConversationContext) -> Environment:
   jinja_env = Environment(loader=BaseLoader(), autoescape=False)  # noqa: S701
   jinja_env.context_class = _jinja_context_from(ctx)
   return jinja_env
 
 
-def template_from_context(template: str, ctx: BotContext) -> str:
+def template_from_context(template: str, ctx: ConversationContext) -> str:
   env = render_in_context(ctx)
   return env.from_string(template).render()

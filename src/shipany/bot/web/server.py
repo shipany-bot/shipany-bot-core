@@ -9,9 +9,9 @@ from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
 
-from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.factories import telegram_objects
 from shipany.bot.conversation import errors
+from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import Conversation, Flow, WebhookActivation
 
@@ -89,7 +89,7 @@ async def _hook_endpoint(
     e.status_code = webhook.status_code_error
     raise e from None
 
-  with bot_context(TelegramObject()) as ctx:
+  with conversation_context(TelegramObject()) as ctx:
     try:
       handler = ActivationHandler(ctx, activation)
       await handler(conversation.steps)

@@ -9,8 +9,7 @@ from aiogram.dispatcher.event.telegram import TelegramEventObserver
 from aiogram.dispatcher.router import Router
 from aiogram.filters.command import Command
 
-from shipany.bot.contrib.aiogram import context
-from shipany.bot.conversation import errors
+from shipany.bot.conversation import context, errors
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import (
   CommandActivation,
@@ -28,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 async def handler(activation: Activation, steps: Steps, event: TelegramObject) -> None:
-  with context.bot_context(event) as ctx:
+  with context.conversation_context(event) as ctx:
     try:
       handler = ActivationHandler(ctx, activation)
       await handler(steps)

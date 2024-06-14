@@ -6,8 +6,8 @@ import pytest
 from aiogram.types import TelegramObject
 
 from shipany.bot.actions.json_path_action.v1 import JsonPathAction
-from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.json_path_action.v1 import process
+from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.handlers.actions import Continue, Terminate
 
 
@@ -59,7 +59,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
 @pytest.mark.asyncio()
 async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[str, str]) -> None:
   action = JsonPathAction(**raw_action)
-  with bot_context(event=TelegramObject()) as ctx:
+  with conversation_context(event=TelegramObject()) as ctx:
     result = process(ctx, action)
     match result:
       case Continue():
@@ -82,6 +82,6 @@ async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[s
 @pytest.mark.asyncio()
 async def test_invalid_state_action(invalid_action: dict[str, t.Any]) -> None:
   action = JsonPathAction(**invalid_action)
-  with bot_context(event=TelegramObject()) as ctx:
+  with conversation_context(event=TelegramObject()) as ctx:
     result = process(ctx, action)
     assert isinstance(result, Terminate)

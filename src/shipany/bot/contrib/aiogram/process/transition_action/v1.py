@@ -9,12 +9,12 @@ from shipany.bot.jsonlogic import apply
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.transition_action.v1 import TransitionAction
-  from shipany.bot.contrib.aiogram.context import BotContext
+  from shipany.bot.conversation.context import ConversationContext
 
 logger = logging.getLogger(__name__)
 
 
-def process(ctx: BotContext, action: TransitionAction) -> GoToStep | Continue:
+def process(ctx: ConversationContext, action: TransitionAction) -> GoToStep | Continue:
   if action.condition is None:
     return GoToStep(step_id=action.next_step)
 

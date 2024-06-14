@@ -3,8 +3,8 @@ import typing as t
 import pytest
 from aiogram.types import TelegramObject
 
-from shipany.bot.contrib.aiogram.context import BotContext, bot_context
 from shipany.bot.conversation import errors
+from shipany.bot.conversation.context import ConversationContext, conversation_context
 from shipany.bot.conversation.errors import ActionNotImplementedError
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models.conversation import Conversation
@@ -12,8 +12,8 @@ from shipany.bot.conversation.models.flow import Flow
 
 
 @pytest.fixture()
-def default_context() -> t.Iterator[BotContext]:
-  with bot_context(TelegramObject()) as ctx:
+def default_context() -> t.Iterator[ConversationContext]:
+  with conversation_context(TelegramObject()) as ctx:
     yield ctx
 
 
@@ -22,7 +22,7 @@ def default_context() -> t.Iterator[BotContext]:
   "flow_as_fixture",
   ["valid_flow_with_unknown_action", "valid_flow_with_broken_v1_action", "valid_flow_with_broken_v2_action"],
 )
-async def test_it_raises_when_unknown_action_met(default_context: BotContext, flow_from_fixture: Flow) -> None:
+async def test_it_raises_when_unknown_action_met(default_context: ConversationContext, flow_from_fixture: Flow) -> None:
   handler = ActivationHandler(default_context, flow_from_fixture.conversations[0].activations[0])
   with pytest.raises(ActionNotImplementedError):
     await handler(flow_from_fixture.conversations[0].steps)
@@ -30,12 +30,12 @@ async def test_it_raises_when_unknown_action_met(default_context: BotContext, fl
 
 @pytest.mark.asyncio()
 @pytest.mark.parametrize("flow_as_fixture", ["valid_flow_with_store_action"])
-async def test_it_returns_nothing_on_empty_step(default_context: BotContext, flow_from_fixture: Flow) -> None:
+async def test_it_returns_nothing_on_empty_step(default_context: ConversationContext, flow_from_fixture: Flow) -> None:
   handler = ActivationHandler(default_context, flow_from_fixture.conversations[0].activations[0])
   await handler(flow_from_fixture.conversations[0].steps)
 
 
-def test_actions_on_step_enter_happy_path(default_context: BotContext) -> None:
+def test_actions_on_step_enter_happy_path(default_context: ConversationContext) -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",
@@ -53,7 +53,7 @@ def test_actions_on_step_enter_happy_path(default_context: BotContext) -> None:
     assert len(actions) == 1
 
 
-def test_empty_actions_in(default_context: BotContext) -> None:
+def test_empty_actions_in(default_context: ConversationContext) -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",
@@ -68,7 +68,7 @@ def test_empty_actions_in(default_context: BotContext) -> None:
     assert len(list(navigator.traverse_actions(conversation.steps))) == 0
 
 
-def test_actions_on_step_enter_no_step(default_context: BotContext) -> None:
+def test_actions_on_step_enter_no_step(default_context: ConversationContext) -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",
@@ -88,7 +88,7 @@ def test_actions_on_step_enter_no_step(default_context: BotContext) -> None:
 
 
 @pytest.mark.asyncio()
-async def test_transition_to_next_step(default_context: BotContext) -> None:
+async def test_transition_to_next_step(default_context: ConversationContext) -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",

@@ -4,9 +4,9 @@ import typing as t
 
 import pytest
 
-from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.renders import template_from_context
 from shipany.bot.contrib.aiogram.renders.attributes_mapping import ATTRIBUTES_MAPPING, VariablesGetter
+from shipany.bot.conversation.context import conversation_context
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message, TelegramObject
@@ -17,7 +17,7 @@ if t.TYPE_CHECKING:
   [{"test": "test"}],
 )
 def test_getter_behaves_like_mapping(hi_message: Message) -> None:
-  with bot_context(event=hi_message) as ctx:
+  with conversation_context(event=hi_message) as ctx:
     getter = VariablesGetter(ctx)
     assert getter["test"] == "test"
     assert "test" in getter
@@ -28,7 +28,7 @@ def test_getter_behaves_like_mapping(hi_message: Message) -> None:
 
 
 def test_getter_returns_only_text_value(hello_message: Message) -> None:
-  with bot_context(event=hello_message) as ctx:
+  with conversation_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx)
     assert getter["message"].text == hello_message.text
     with pytest.raises(AttributeError, match="message_id"):
@@ -36,7 +36,7 @@ def test_getter_returns_only_text_value(hello_message: Message) -> None:
 
 
 def test_getter_returns_secrets(hello_message: Message) -> None:
-  with bot_context(event=hello_message) as ctx:
+  with conversation_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx)
     assert getter["secrets"] == {}
 
@@ -54,5 +54,5 @@ def test_getter_returns_secrets(hello_message: Message) -> None:
   ],
 )
 def test_getter_returns_user_attributes(telegram_event: TelegramObject, attribute: str, expected_result: str) -> None:
-  with bot_context(event=telegram_event) as ctx:
+  with conversation_context(event=telegram_event) as ctx:
     assert template_from_context("{{" + attribute + "}}", ctx) == expected_result
