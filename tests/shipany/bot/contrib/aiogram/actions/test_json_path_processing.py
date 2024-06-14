@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import typing as t
 
-import inject
 import pytest
 from aiogram.types import TelegramObject
 
@@ -10,18 +9,6 @@ from shipany.bot.actions.json_path_action.v1 import JsonPathAction
 from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.json_path_action.v1 import process
 from shipany.bot.conversation.handlers.actions import Continue, Terminate
-from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
-
-BinderCallable = t.Callable[[inject.Binder], None]
-
-
-@pytest.fixture(autouse=True)
-def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
-  def _runtime_bindings(binder: inject.Binder) -> None:
-    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
-    binder.bind(CapturesProvider, captures_provider)
-
-  return _runtime_bindings
 
 
 @pytest.mark.parametrize(
@@ -81,10 +68,6 @@ async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[s
         pytest.fail("Unexpected result")
 
 
-@pytest.mark.parametrize(
-  "setup_captures",
-  [{}],
-)
 @pytest.mark.parametrize(
   "invalid_action",
   [

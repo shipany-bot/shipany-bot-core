@@ -13,11 +13,17 @@ BinderCallable = t.Callable[[inject.Binder], None]
 
 
 @pytest.fixture()
-def captures_provider() -> BinderCallable:
-  def _captures_provider(binder: inject.Binder) -> None:
-    binder.bind(CapturesProvider, InMemoryCapturesProvider())
+def setup_captures() -> t.Mapping[str, str]:
+  return {}
 
-  return _captures_provider
+
+@pytest.fixture()
+def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
+  def _runtime_bindings(binder: inject.Binder) -> None:
+    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
+    binder.bind(CapturesProvider, captures_provider)
+
+  return _runtime_bindings
 
 
 @pytest.fixture()

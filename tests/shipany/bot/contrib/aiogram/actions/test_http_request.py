@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import typing as t
 
-import inject
 import pytest
 from aiogram.types import TelegramObject
 from pydantic import BaseModel
@@ -11,7 +10,6 @@ from shipany.bot.actions.http_request.v1 import HttpRequest
 from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.process.http_request.v1 import process
 from shipany.bot.conversation.handlers.actions import Continue
-from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
 
 if t.TYPE_CHECKING:
   from pydantic import JsonValue
@@ -22,18 +20,6 @@ class MockedResponse(BaseModel):
   url: str
   status_code: int = 200
   text: str
-
-
-BinderCallable = t.Callable[[inject.Binder], None]
-
-
-@pytest.fixture(autouse=True)
-def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
-  def _runtime_bindings(binder: inject.Binder) -> None:
-    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
-    binder.bind(CapturesProvider, captures_provider)
-
-  return _runtime_bindings
 
 
 @pytest.mark.parametrize(

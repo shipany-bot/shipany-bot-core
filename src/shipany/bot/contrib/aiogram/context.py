@@ -36,5 +36,4 @@ def bot_context(event: aiogram_types.TelegramObject) -> t.Iterator[BotContext]:
     raise
 
   with runtime_context() as runtime, captures_provider.snapshot() as captures:
-    ctx = BotContext(captures=captures, runtime=runtime, event=event)
-    yield ctx
+    yield BotContext(captures=captures, runtime=runtime, event=event)

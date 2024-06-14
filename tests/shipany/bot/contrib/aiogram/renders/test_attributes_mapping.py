@@ -2,27 +2,14 @@ from __future__ import annotations
 
 import typing as t
 
-import inject
 import pytest
 
 from shipany.bot.contrib.aiogram.context import bot_context
 from shipany.bot.contrib.aiogram.renders import template_from_context
 from shipany.bot.contrib.aiogram.renders.attributes_mapping import ATTRIBUTES_MAPPING, VariablesGetter
-from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message, TelegramObject
-
-BinderCallable = t.Callable[[inject.Binder], None]
-
-
-@pytest.fixture(autouse=True)
-def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
-  def _runtime_bindings(binder: inject.Binder) -> None:
-    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
-    binder.bind(CapturesProvider, captures_provider)
-
-  return _runtime_bindings
 
 
 @pytest.mark.parametrize(
@@ -40,10 +27,6 @@ def test_getter_behaves_like_mapping(hi_message: Message) -> None:
       getter["not_found"]
 
 
-@pytest.mark.parametrize(
-  "setup_captures",
-  [{}],
-)
 def test_getter_returns_only_text_value(hello_message: Message) -> None:
   with bot_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx)
@@ -52,20 +35,12 @@ def test_getter_returns_only_text_value(hello_message: Message) -> None:
       assert getter["message"].message_id == hello_message.message_id
 
 
-@pytest.mark.parametrize(
-  "setup_captures",
-  [{}],
-)
 def test_getter_returns_secrets(hello_message: Message) -> None:
   with bot_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx)
     assert getter["secrets"] == {}
 
 
-@pytest.mark.parametrize(
-  "setup_captures",
-  [{}],
-)
 @pytest.mark.parametrize(
   ("telegram_event_fixture_name", "attribute", "expected_result"),
   [
