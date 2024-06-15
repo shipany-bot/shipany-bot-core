@@ -6,18 +6,26 @@ from shipany.bot.conversation.context import ConversationContext
 from shipany.bot.conversation.handlers.actions import Continue
 from shipany.bot.conversation.renders.jinja_env import template_from_context
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("StateAction@v1")
 
 
 def process(ctx: ConversationContext, action: StateAction) -> Continue:
-  action_type = SupportedStateActionTypes(action.action_type)
-  match action_type:
+  match action.action_type:
     case SupportedStateActionTypes.store:
-      if action.value is None:
-        del ctx.captures[action.key]
-        logger.info(f"Removed key '{action.key}'")
-      else:
+      if action.value is not None:
         ctx.captures[action.key] = template_from_context(action.value, ctx, safe=True)
         logger.info(f"Stored value '{ctx.captures[action.key]}' in key '{action.key}'")
-      return Continue()
-  t.assert_never(action_type)
+
+    case SupportedStateActionTypes.remove:
+      if action.value is not None:
+        logger.warning(f"Value '{action.value}' is ignored for 'remove' action type.")
+
+      try:
+        del ctx.captures[action.key]
+        logger.info(f"Removed key '{action.key}'")
+      except KeyError:
+        logger.warning(f"Key '{action.key}' doesn't exist.")
+
+    case _:
+      t.assert_never(action.action_type)
+  return Continue()

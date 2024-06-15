@@ -12,7 +12,12 @@ from shipany.bot.conversation.handlers.actions import Continue
   ("action", "setup_captures", "captures_after"),
   [
     (
-      StateAction.model_validate({"name": "StateAction@1", "type": "store", "key": "hello", "value": None}),
+      StateAction.model_validate({"name": "StateAction@1", "type": "remove", "key": "hello"}),
+      {"hello": "1"},
+      {},
+    ),
+    (
+      StateAction.model_validate({"name": "StateAction@1", "type": "remove", "key": "hello", "value": "1"}),
       {"hello": "1"},
       {},
     ),
@@ -20,6 +25,11 @@ from shipany.bot.conversation.handlers.actions import Continue
       StateAction.model_validate({"name": "StateAction@1", "type": "store", "key": "hello", "value": "1"}),
       {},
       {"hello": "1"},
+    ),
+    (
+      StateAction.model_validate({"name": "StateAction@1", "type": "remove", "key": "hello"}),
+      {},
+      {},
     ),
   ],
 )
