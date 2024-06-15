@@ -12,8 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class VariablesGetter(Mapping[str, t.Any]):
-  def __init__(self: t.Self, ctx: ConversationContext) -> None:
+  def __init__(self: t.Self, ctx: ConversationContext, *, safe: bool) -> None:
     self._ctx = ctx
+    self._safe = safe
 
   def __getitem__(self: t.Self, key: str) -> t.Any:  # noqa: ANN401
     logger.info("Getting the attribute: %s", key)
@@ -25,7 +26,7 @@ class VariablesGetter(Mapping[str, t.Any]):
       pass
 
     if key == "secrets":
-      return self._ctx.runtime.secrets
+      return self._ctx.runtime.secrets if self._safe else {key: "*****" for key in self._ctx.runtime.secrets}
 
     if key in self._ctx.captures:
       logger.info("Fetching %s from captures", key)

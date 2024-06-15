@@ -18,7 +18,7 @@ if t.TYPE_CHECKING:
 )
 def test_getter_behaves_like_mapping(hi_message: Message) -> None:
   with conversation_context(event=hi_message) as ctx:
-    getter = VariablesGetter(ctx)
+    getter = VariablesGetter(ctx, safe=True)
     assert getter["test"] == "test"
     assert "test" in getter
     with pytest.raises(KeyError):
@@ -27,16 +27,32 @@ def test_getter_behaves_like_mapping(hi_message: Message) -> None:
 
 def test_getter_returns_only_text_value(hello_message: Message) -> None:
   with conversation_context(event=hello_message) as ctx:
-    getter = VariablesGetter(ctx)
+    getter = VariablesGetter(ctx, safe=True)
     assert getter["message"].text == hello_message.text
     with pytest.raises(AttributeError, match="message_id"):
       assert getter["message"].message_id == hello_message.message_id
 
 
+@pytest.mark.parametrize(
+  "setup_secrets",
+  [{"secr3t": "passw0rd"}],
+)
 def test_getter_returns_secrets(hello_message: Message) -> None:
   with conversation_context(event=hello_message) as ctx:
-    getter = VariablesGetter(ctx)
-    assert getter["secrets"] == {}
+    getter = VariablesGetter(ctx, safe=True)
+    assert "secr3t" in getter["secrets"]
+    assert getter["secrets"]["secr3t"] == "passw0rd"
+
+
+@pytest.mark.parametrize(
+  "setup_secrets",
+  [{"secr3t": "passw0rd"}],
+)
+def test_getter_returns_secrets_when_unsafe(hello_message: Message) -> None:
+  with conversation_context(event=hello_message) as ctx:
+    getter = VariablesGetter(ctx, safe=False)
+    assert "secr3t" in getter["secrets"]
+    assert getter["secrets"]["secr3t"] != "passw0rd"
 
 
 @pytest.mark.parametrize(

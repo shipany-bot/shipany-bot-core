@@ -33,13 +33,13 @@ class LazyJinjaContext(JinjaContext):
       return super().resolve_or_missing(key)
 
 
-def _jinja_context_from(ctx: ConversationContext) -> type[JinjaContext]:
-  return t.cast(type[JinjaContext], partial(LazyJinjaContext, VariablesGetter(ctx)))
+def _jinja_context_from(ctx: ConversationContext, *, safe: bool) -> type[JinjaContext]:
+  return t.cast(type[JinjaContext], partial(LazyJinjaContext, VariablesGetter(ctx, safe=safe)))
 
 
 def render_in_context(ctx: ConversationContext, *, safe: bool) -> Environment:
-  jinja_env = Environment(loader=BaseLoader(), autoescape=not safe)  # noqa: S701
-  jinja_env.context_class = _jinja_context_from(ctx)
+  jinja_env = Environment(loader=BaseLoader(), autoescape=False)  # noqa: S701
+  jinja_env.context_class = _jinja_context_from(ctx, safe=safe)
   return jinja_env
 
 
