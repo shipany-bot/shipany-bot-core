@@ -4,7 +4,6 @@ import logging
 import typing as t
 
 from shipany.bot.conversation.handlers.actions import Continue, GoToStep
-from shipany.bot.conversation.renders.context_proxy import proxy
 from shipany.bot.jsonlogic import apply
 
 if t.TYPE_CHECKING:
@@ -18,7 +17,7 @@ def process(ctx: ConversationContext, action: TransitionAction) -> GoToStep | Co
   if action.condition is None:
     return GoToStep(step_id=action.next_step)
 
-  if apply(action.condition, proxy(ctx)):
+  if apply(action.condition, ctx):
     return GoToStep(step_id=action.next_step)
 
   return Continue()

@@ -1,4 +1,4 @@
-from shipany.bot.jsonlogic.apply import SupportsGetOrDefault as SupportsGetOrDefault, apply as apply
+from shipany.bot.jsonlogic.apply import apply as apply
 from shipany.bot.jsonlogic.model import (
   AndOperation as AndOperation,
   EqualsOperation as EqualsOperation,

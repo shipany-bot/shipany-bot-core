@@ -12,7 +12,6 @@ from shipany.bot.conversation.handlers.actions import (
   Terminate,
   handle,
 )
-from shipany.bot.conversation.renders.context_proxy import proxy
 from shipany.bot.jsonlogic import JsonLogic, apply
 
 if t.TYPE_CHECKING:
@@ -43,7 +42,7 @@ class ActivationHandler:
 
   def check_preconditions(self: t.Self, condition: JsonLogic) -> None:
     logger.info("Checking condition %s", condition)
-    if not apply(condition, proxy(self.context)):
+    if not apply(condition, self.context):
       logger.info("The condition is not met. Skipping the handler.")
       raise errors.ActivationPreconditionNotMeetError
 
