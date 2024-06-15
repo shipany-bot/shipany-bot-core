@@ -6,7 +6,7 @@ import pytest
 
 from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.renders.attributes_mapping import VariablesGetter
-from shipany.bot.conversation.renders.jinja_env import template_from_context
+from shipany.bot.conversation.renders.jinja_env import value_from_context
 
 if t.TYPE_CHECKING:
   from aiogram.types import Message, TelegramObject
@@ -69,4 +69,4 @@ def test_getter_returns_secrets_when_unsafe(hello_message: Message) -> None:
 )
 def test_getter_returns_user_attributes(telegram_event: TelegramObject, attribute: str, expected_result: str) -> None:
   with conversation_context(event=telegram_event) as ctx:
-    assert template_from_context("{{" + attribute + "}}", ctx, safe=False) == expected_result
+    assert value_from_context(attribute, ctx, safe=False) == expected_result

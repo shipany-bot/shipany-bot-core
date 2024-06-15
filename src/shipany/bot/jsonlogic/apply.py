@@ -4,7 +4,7 @@ import logging
 import typing as t
 
 from shipany.bot import jsonlogic as jl
-from shipany.bot.conversation.renders.jinja_env import template_from_context
+from shipany.bot.conversation.renders.jinja_env import value_from_context
 
 if t.TYPE_CHECKING:
   from pydantic import JsonValue
@@ -54,5 +54,5 @@ def apply(logic: jl.JsonLogic, ctx: ConversationContext) -> JsonValue:
     case jl.NotOperation(args=args):
       return not apply(args[0], ctx) if isinstance(args[0], jl.JsonLogic) else not args[0]  # type: ignore[has-type]
     case jl.VarOperation(var=var):
-      return template_from_context("{{" + str(var) + "}}", ctx, safe=True)  # type: ignore[has-type]
+      return value_from_context(str(var), ctx, safe=True)  # type: ignore[has-type]
   t.assert_never(logic)

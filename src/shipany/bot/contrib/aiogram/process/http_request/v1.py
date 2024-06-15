@@ -5,7 +5,7 @@ import typing as t
 import httpx
 
 from shipany.bot.conversation.handlers.actions import Continue
-from shipany.bot.conversation.renders.jinja_env import template_from_context
+from shipany.bot.conversation.renders.jinja_env import value_from_context
 
 if t.TYPE_CHECKING:
   from shipany.bot.actions.http_request.v1 import HttpRequest
@@ -25,7 +25,7 @@ async def process(ctx: ConversationContext, action: HttpRequest) -> Continue:
     )
     if action.captures:
       response_context = ctx.model_copy(update={"event": response})
-      for key, template in action.captures.items():
-        ctx.captures[key] = template_from_context("{{" + template + "}}", response_context, safe=True)
+      for key, value in action.captures.items():
+        ctx.captures[key] = value_from_context(value, response_context, safe=True)
 
   return Continue()
