@@ -1,9 +1,9 @@
 import inject
 
-from .process.http_request import bindings as http_request_bindings
-from .renders import bindings
+from .process import bindings as process_bindings
+from .renders import bindings as renders_bindings
 
 
 def default_bindings(binder: inject.Binder) -> None:
-  bindings.default_bindings(binder)
-  http_request_bindings.default_bindings(binder)
+  process_bindings.default_bindings(binder)
+  renders_bindings.default_bindings(binder)
