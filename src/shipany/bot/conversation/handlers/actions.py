@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import inspect
 import logging
 import re
@@ -63,7 +64,7 @@ def _camel_to_snake(name: str) -> str:
 def _find_action_module(module_name: str, class_name: str, class_version: str) -> type[BaseModel]:
   full_module_name = f"shipany.bot.actions.{module_name}.{class_version}"
   try:
-    module = __import__(full_module_name, fromlist=[class_version])
+    module = importlib.import_module(full_module_name)
   except ImportError:
     raise NotImplementedError(f"Module {full_module_name} is not importable") from None
 
@@ -86,7 +87,7 @@ class ModuleWithProcessFunction(t.Protocol):
 def _func_process_module(module_name: str, class_name: str, class_version: str) -> ModuleWithProcessFunction:
   full_module_name = f"shipany.bot.contrib.aiogram.process.{module_name}.{class_version}"
   try:
-    module = __import__(full_module_name, fromlist=[class_version])
+    module = importlib.import_module(full_module_name)
   except ImportError:
     raise NotImplementedError(f"Module {full_module_name} is not importable") from None
 
