@@ -9,7 +9,7 @@ from shipany.bot.conversation.handlers.actions import Continue
 
 
 @pytest.mark.parametrize(
-  ("action", "setup_captures", "captures_after"),
+  ("action", "setup_locals", "captures_after"),
   [
     (
       StateAction.model_validate({"name": "StateAction@1", "type": "remove", "key": "hello"}),
@@ -30,6 +30,21 @@ from shipany.bot.conversation.handlers.actions import Continue
       StateAction.model_validate({"name": "StateAction@1", "type": "remove", "key": "hello"}),
       {},
       {},
+    ),
+    (
+      StateAction.model_validate({"name": "StateAction@1", "type": "load", "key": "hello"}),
+      {"hello": "1"},
+      {"hello": "1"},
+    ),
+    (
+      StateAction.model_validate({"name": "StateAction@1", "type": "load", "key": "hello", "value": "1"}),
+      {"hello": "1"},
+      {"hello": "1"},
+    ),
+    (
+      StateAction.model_validate({"name": "StateAction@1", "type": "load", "key": "world"}),
+      {"hello": "1"},
+      {"hello": "1"},
     ),
   ],
 )

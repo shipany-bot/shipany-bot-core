@@ -11,7 +11,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
 
 
 @pytest.mark.parametrize(
-  ("setup_captures", "raw_action", "captures_after"),
+  ("setup_locals", "raw_action", "captures_after"),
   [
     (
       {"hello": '{"world": 1}'},

@@ -13,7 +13,7 @@ if t.TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-  "setup_captures",
+  "setup_locals",
   [{"test": "test"}],
 )
 def test_getter_behaves_like_mapping(hi_message: Message) -> None:

@@ -24,20 +24,32 @@ _validate_call = validate_call(config=ConfigDict(arbitrary_types_allowed=True), 
 
 
 class CapturesModifier:
-  def __init__(self: t.Self, captures: t.MutableMapping[str, str], handle_generator: HandleGenerator) -> None:
+  def __init__(
+    self: t.Self,
+    captures: t.MutableMapping[str, str],
+    locals: t.MutableMapping[str, str],
+    handle_generator: HandleGenerator,
+  ) -> None:
     self._captures = captures
+    self._locals = locals
     self._handle_generator = handle_generator
 
   @_validate_call
   def set(self, key: str, value: str, *, scope: list[Scope]) -> None:  # noqa: ANN101
+    if not scope:
+      self._locals[key] = value
     self._captures[self._key(key, scope)] = value
 
   @_validate_call
   def get(self, key: str, *, scope: list[Scope]) -> str | None:  # noqa: ANN101
+    if not scope:
+      return self._locals[key]
     return self._captures[self._key(key, scope)]
 
   @_validate_call
   def remove(self, key: str, *, scope: list[Scope]) -> None:  # noqa: ANN101
+    if not scope:
+      del self._locals[key]
     del self._captures[self._key(key, scope)]
 
   def _key(self: t.Self, key: str, scope: list[Scope]) -> str:
@@ -46,13 +58,21 @@ class CapturesModifier:
     return handle
 
   def __eq__(self: t.Self, other: t.Any) -> bool:  # noqa: ANN401
-    return self._captures == other._captures if isinstance(other, CapturesModifier) else self._captures == other
+    if not isinstance(other, CapturesModifier):
+      return other == dict(self._captures) | dict(self._locals)
+    return self._captures == other
 
 
 class InMemoryCapturesProvider:
-  def __init__(self: t.Self, *, initial_value: t.Mapping[str, str] | None = None) -> None:
-    self._captures: dict[str, str] = dict(**initial_value) if initial_value else {}
+  def __init__(
+    self: t.Self,
+    *,
+    setup_captures: t.Mapping[str, str] | None = None,
+    setup_locals: t.Mapping[str, str] | None = None,
+  ) -> None:
+    self._locals: dict[str, str] = dict(**setup_locals) if setup_locals else {}
+    self._captures: dict[str, str] = dict(**setup_captures) if setup_captures else {}
 
   @contextmanager
   def snapshot(self: t.Self, handle_generator: HandleGenerator) -> t.Iterator[CapturesModifier]:
-    yield CapturesModifier(self._captures, handle_generator)
+    yield CapturesModifier(self._captures, self._locals, handle_generator)

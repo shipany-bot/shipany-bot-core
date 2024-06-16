@@ -11,6 +11,7 @@ from shipany.bot.persistency.scopes import Scope  # noqa: TCH001
 class SupportedStateActionTypes(StrEnum):
   remove = "remove"
   store = "store"
+  load = "load"
 
 
 class StateAction(BaseModel):

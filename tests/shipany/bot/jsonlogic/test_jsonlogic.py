@@ -8,7 +8,7 @@ from shipany.bot.conversation.context import conversation_context
 
 
 @pytest.mark.parametrize(
-  ("raw_logic", "setup_captures", "expected"),
+  ("raw_logic", "setup_locals", "expected"),
   [
     ({"in": ["Hello", "Hello World!"]}, None, True),
     ({"in": ["Hello", ["Hello", "World!"]]}, None, True),
@@ -38,7 +38,7 @@ def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, expected: JsonValue)
 
 
 @pytest.mark.parametrize(
-  ("string_logic", "setup_captures", "expected"),
+  ("string_logic", "setup_locals", "expected"),
   [
     ('{"in": ["Hello", "Hello World!"]}', None, True),
     ('{"in": ["Hello", ["Hello", "World!"]]}', None, True),

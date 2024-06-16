@@ -20,14 +20,19 @@ def setup_captures() -> t.Mapping[str, str]:
 
 
 @pytest.fixture()
+def setup_locals() -> t.Mapping[str, str]:
+  return {}
+
+
+@pytest.fixture()
 def setup_secrets() -> t.Mapping[str, str]:
   return {}
 
 
 @pytest.fixture()
-def captures_provider(setup_captures: t.Mapping[str, str]) -> BinderCallable:
+def captures_provider(setup_captures: t.Mapping[str, str], setup_locals: t.Mapping[str, str]) -> BinderCallable:
   def _runtime_bindings(binder: inject.Binder) -> None:
-    captures_provider = InMemoryCapturesProvider(initial_value=setup_captures)
+    captures_provider = InMemoryCapturesProvider(setup_captures=setup_captures, setup_locals=setup_locals)
     binder.bind(CapturesProvider, captures_provider)
 
   return _runtime_bindings

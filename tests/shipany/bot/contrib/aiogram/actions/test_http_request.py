@@ -22,7 +22,7 @@ class MockedResponse(BaseModel):
 
 
 @pytest.mark.parametrize(
-  ("setup_captures", "raw_action", "captures_after", "response"),
+  ("setup_locals", "raw_action", "captures_after", "response"),
   [
     (
       {},
