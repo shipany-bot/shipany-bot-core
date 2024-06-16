@@ -7,6 +7,7 @@ from contextlib import contextmanager
 import inject
 from pydantic import BaseModel, ConfigDict, Field
 
+from shipany.bot.persistency.handles import HandleGeneratorFactory
 from shipany.bot.providers.captures import CapturesModifier, CapturesProvider
 from shipany.bot.runtime.context import RuntimeContext, runtime_context
 
@@ -34,5 +35,14 @@ def conversation_context(event: t.Any = None) -> t.Iterator[ConversationContext]
     )
     raise
 
-  with runtime_context() as runtime, captures_provider.snapshot() as captures:
+  try:
+    handle_generator_factory = inject.instance(HandleGeneratorFactory)
+    handle_generator = handle_generator_factory.create(event)
+  except inject.InjectorException:  # pragma: no cover
+    logger.warning(
+      "HandleGeneratorFactory is not found in the injector. Have you forgotten to call default_runtime_bindings?"
+    )
+    raise
+
+  with runtime_context() as runtime, captures_provider.snapshot(handle_generator) as captures:
     yield ConversationContext(captures=captures, runtime=runtime, event=event)

@@ -26,7 +26,7 @@ def process(ctx: ConversationContext, action: JsonPathAction) -> Continue | Term
     json_value = json.loads(value)
     matches: list[jsonpath.DatumInContext] = jsonpath_expr.find(json_value)
     for key, match_ in zip(action.captures.keys(), matches):
-      ctx.captures[key] = json.dumps(match_.value if match_ is not None else None)
+      ctx.captures.set(key, json.dumps(match_.value if match_ is not None else None), scope=[])
   except json.JSONDecodeError as e:
     logger.exception(f"Error while parsing JSON: {e}", exc_info=False)  # noqa: TRY401
     return Terminate()

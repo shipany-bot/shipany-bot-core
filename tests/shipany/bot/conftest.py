@@ -7,6 +7,7 @@ import inject
 import pytest
 
 from shipany.bot.contrib.aiogram import bindings as aiogram_bindings
+from shipany.bot.persistency.handles import HandleGeneratorFactory
 from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
 from shipany.bot.providers.secrets import SecretsProvider, StubSecretsProvider
 
@@ -41,6 +42,14 @@ def secrets_provider(setup_secrets: t.Mapping[str, str]) -> BinderCallable:
 
 
 @pytest.fixture()
+def captures_key_generator() -> BinderCallable:
+  def _captures_key_generator(binder: inject.Binder) -> None:
+    binder.bind(HandleGeneratorFactory, HandleGeneratorFactory())
+
+  return _captures_key_generator
+
+
+@pytest.fixture()
 def aiogram_default_bindings() -> BinderCallable:
   def _aiogram_default_bindings(binder: inject.Binder) -> None:
     aiogram_bindings.default_bindings(binder)
@@ -53,11 +62,13 @@ def all_bindings(
   captures_provider: BinderCallable,
   secrets_provider: BinderCallable,
   aiogram_default_bindings: BinderCallable,
+  captures_key_generator: BinderCallable,
 ) -> BinderCallable:
   def _all_bindings(binder: inject.Binder) -> None:
+    aiogram_default_bindings(binder)
     captures_provider(binder)
     secrets_provider(binder)
-    aiogram_default_bindings(binder)
+    captures_key_generator(binder)
 
   return _all_bindings
 

@@ -13,16 +13,13 @@ def process(ctx: ConversationContext, action: StateAction) -> Continue:
   match action.action_type:
     case SupportedStateActionTypes.store:
       if action.value is not None:
-        ctx.captures[action.key] = template_from_context(action.value, ctx, safe=True)
-        logger.info(f"Stored value '{ctx.captures[action.key]}' in key '{action.key}'")
+        ctx.captures.set(action.key, template_from_context(action.value, ctx, safe=True), scope=[])
 
     case SupportedStateActionTypes.remove:
       if action.value is not None:
         logger.warning(f"Value '{action.value}' is ignored for 'remove' action type.")
-
       try:
-        del ctx.captures[action.key]
-        logger.info(f"Removed key '{action.key}'")
+        ctx.captures.remove(action.key, scope=[])
       except KeyError:
         logger.warning(f"Key '{action.key}' doesn't exist.")
 

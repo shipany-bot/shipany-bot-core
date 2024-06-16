@@ -28,9 +28,8 @@ class VariablesGetter(Mapping[str, t.Any]):
     if key == "secrets":
       return self._ctx.runtime.secrets if self._safe else {key: "*****" for key in self._ctx.runtime.secrets}
 
-    if key in self._ctx.captures:
-      logger.info("Fetching %s from captures", key)
-      return self._ctx.captures[key]
+    if value := self._ctx.captures.get(key, scope=[]):
+      return value
 
     raise KeyError(key)
 

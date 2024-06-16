@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import inject
 import pytest
 
 from shipany.bot.actions.state_action.v1 import StateAction
 from shipany.bot.contrib.aiogram.process.state_action.v1 import process
 from shipany.bot.conversation.context import conversation_context
-from shipany.bot.providers.captures import CapturesProvider
 
 
 @pytest.mark.asyncio()
@@ -15,6 +13,5 @@ async def test_context_changes() -> None:
   with conversation_context() as ctx:
     process(ctx, action)
 
-  provider: CapturesProvider = inject.instance(CapturesProvider)
-  with provider.snapshot() as captures:
-    assert captures == {"hello": "1"}
+  with conversation_context() as ctx:
+    assert ctx.captures == {"hello": "1"}
