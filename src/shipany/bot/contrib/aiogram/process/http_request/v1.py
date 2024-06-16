@@ -26,6 +26,6 @@ async def process(ctx: ConversationContext, action: HttpRequest) -> Continue:
     if action.captures:
       response_context = ctx.model_copy(update={"event": response})
       for key, value in action.captures.items():
-        ctx.captures.set(key, value_from_context(value, response_context, safe=True), scope=[])
+        ctx.captures.set(key, value_from_context(value, response_context, scopes=[], safe=True), scope=[])
 
   return Continue()

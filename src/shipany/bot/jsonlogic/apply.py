@@ -53,6 +53,6 @@ def apply(logic: jl.JsonLogic, ctx: ConversationContext) -> JsonValue:
       )
     case jl.NotOperation(args=args):
       return not apply(args[0], ctx) if isinstance(args[0], jl.JsonLogic) else not args[0]  # type: ignore[has-type]
-    case jl.VarOperation(var=var):
-      return value_from_context(str(var), ctx, safe=True)  # type: ignore[has-type]
+    case jl.VarOperation(var=var, scope=scope):
+      return value_from_context(str(var), ctx, scopes=[scope] if scope else [], safe=True)  # type: ignore[has-type]
   t.assert_never(logic)

@@ -12,6 +12,9 @@ class Scope(StrEnum):
   User scope is used to store the state for the current user. The values stored in user scope are available
   for the current user across all chats. The values stored in user scope are not available for other users.
 
+  Session store is used to store the state between the different steps of the conversation. They are available only
+  for the current user and the current chat.
+
   """
 
   chat = "chat"

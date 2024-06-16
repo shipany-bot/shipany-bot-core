@@ -35,7 +35,9 @@ class NoScopeHandleGenerator(HandleGenerator):
 
   def generate(self: t.Self, key: str, _: list[Scope]) -> str:
     if "pytest" not in sys.modules:
-      warnings.warn("This is a stub implementation of CaptureKeyGenerator. Do not use it in production", stacklevel=2)
+      warnings.warn(
+        "Stub implementation of CaptureKeyGenerator is activated. Do not use it in production", stacklevel=2
+      )
     return key
 
 

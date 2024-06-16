@@ -3,7 +3,6 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from aiogram.types import TelegramObject
 
 from shipany.bot.actions.json_path_action.v1 import JsonPathAction
 from shipany.bot.contrib.aiogram.process.json_path_action.v1 import process
@@ -20,7 +19,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
         "name": "JsonPathAction@1",
         "expression": "$.world",
         "input": "{{hello}}",
-        "captures": {"result": []},
+        "captures": {"result": ""},
       },
       {"hello": '{"world": 1}', "result": "1"},
     ),
@@ -40,7 +39,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
         "name": "JsonPathAction@1",
         "expression": "[*].world",
         "input": "{{hello}}",
-        "captures": {"result1": [], "result2": []},
+        "captures": {"result1": "", "result2": ""},
       },
       {"hello": '[{"world": 1}, {"world": 2}]', "result1": "1", "result2": "2"},
     ),
@@ -50,7 +49,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
         "name": "JsonPathAction@1",
         "expression": "[*].world",
         "input": "{{hello}}",
-        "captures": {"result1": []},
+        "captures": {"result1": ""},
       },
       {"hello": '[{"world": 1}, {"world": 2}]', "result1": "1"},
     ),
@@ -58,7 +57,7 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
 )
 @pytest.mark.asyncio()
 async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[str, str]) -> None:
-  action = JsonPathAction(**raw_action)
+  action = JsonPathAction.model_validate(raw_action)
   with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
@@ -75,13 +74,13 @@ async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[s
       "name": "JsonPathAction@1",
       "expression": "$.world",
       "input": "invalid",
-      "captures": {"result": []},
+      "captures": {"result": ""},
     },
   ],
 )
 @pytest.mark.asyncio()
 async def test_invalid_state_action(invalid_action: dict[str, t.Any]) -> None:
-  action = JsonPathAction(**invalid_action)
-  with conversation_context(event=TelegramObject()) as ctx:
+  action = JsonPathAction.model_validate(invalid_action)
+  with conversation_context() as ctx:
     result = process(ctx, action)
     assert isinstance(result, Terminate)

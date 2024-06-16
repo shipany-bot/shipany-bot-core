@@ -41,7 +41,9 @@ class CapturesModifier:
     del self._captures[self._key(key, scope)]
 
   def _key(self: t.Self, key: str, scope: list[Scope]) -> str:
-    return self._handle_generator.generate(key, scope)
+    handle = self._handle_generator.generate(key, scope)
+    logger.info("Generated handle for key=%s and scope=%s: %s", key, scope, handle)
+    return handle
 
   def __eq__(self: t.Self, other: t.Any) -> bool:  # noqa: ANN401
     return self._captures == other._captures if isinstance(other, CapturesModifier) else self._captures == other

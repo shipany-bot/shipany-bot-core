@@ -9,6 +9,7 @@ from pydantic import validate_call
 
 from shipany.bot.conversation.context import ConversationContext  # noqa: TCH001
 from shipany.bot.conversation.renders.attributes_mapping import VariablesGetter
+from shipany.bot.persistency.scopes import Scope  # noqa: TCH001
 
 __all__ = ["template_from_context", "value_from_context"]
 
@@ -34,22 +35,22 @@ class LazyJinjaContext(JinjaContext):
       return super().resolve_or_missing(key)
 
 
-def _jinja_context_from(ctx: ConversationContext, *, safe: bool) -> type[JinjaContext]:
-  return t.cast(type[JinjaContext], partial(LazyJinjaContext, VariablesGetter(ctx, safe=safe)))
+def _jinja_context_from(ctx: ConversationContext, *, scopes: list[Scope], safe: bool) -> type[JinjaContext]:
+  return t.cast(type[JinjaContext], partial(LazyJinjaContext, VariablesGetter(ctx, scopes, safe=safe)))
 
 
-def _render_in_context(ctx: ConversationContext, *, safe: bool) -> Environment:
+def _render_in_context(ctx: ConversationContext, *, scopes: list[Scope], safe: bool) -> Environment:
   jinja_env = Environment(loader=BaseLoader(), autoescape=False)  # noqa: S701
-  jinja_env.context_class = _jinja_context_from(ctx, safe=safe)
+  jinja_env.context_class = _jinja_context_from(ctx, scopes=scopes, safe=safe)
   return jinja_env
 
 
 @validate_call
-def template_from_context(template: str, ctx: ConversationContext, *, safe: bool) -> str:
-  env = _render_in_context(ctx, safe=safe)
+def template_from_context(template: str, ctx: ConversationContext, *, scopes: list[Scope], safe: bool) -> str:
+  env = _render_in_context(ctx, scopes=scopes, safe=safe)
   return env.from_string(template).render()
 
 
 @validate_call
-def value_from_context(attribute: str, ctx: ConversationContext, *, safe: bool) -> str:
-  return template_from_context(f"{{{{{attribute}}}}}", ctx, safe=safe)
+def value_from_context(attribute: str, ctx: ConversationContext, *, scopes: list[Scope], safe: bool) -> str:
+  return template_from_context(f"{{{{{attribute}}}}}", ctx, scopes=scopes, safe=safe)

@@ -4,6 +4,8 @@ import typing as t
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from shipany.bot.persistency.scopes import Scope  # noqa: TCH001
+
 
 class EqualsOperation(BaseModel):
   args: list[JsonLogic | str | int | bool | float | list[str | int | bool | float]] = Field(alias="==")
@@ -62,6 +64,7 @@ class NotOperation(BaseModel):
 
 class VarOperation(BaseModel):
   var: str = Field(alias="var", min_length=1)
+  scope: Scope | None = None
   model_config = ConfigDict(frozen=True, extra="forbid")
 
 
