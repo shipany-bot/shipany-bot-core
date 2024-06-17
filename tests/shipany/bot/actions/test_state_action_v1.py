@@ -5,11 +5,11 @@ from shipany.bot.actions.state_action.v1 import StateAction
 
 
 def test_store_type_with_no_value() -> None:
-  with pytest.raises(ValidationError):
+  with pytest.raises(ValidationError, match="Value cannot be None for 'store' action type"):
     StateAction.model_validate(
       {
         "name": "StateAction@1",
-        "type:": "store",
+        "type": "store",
         "key": "key",
       }
     )

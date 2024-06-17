@@ -7,9 +7,15 @@ import inject
 import pytest
 
 from shipany.bot.contrib.aiogram import bindings as aiogram_bindings
+from shipany.bot.conversation.loader import load
 from shipany.bot.persistency.handles import HandleGeneratorFactory
 from shipany.bot.providers.captures import CapturesProvider, InMemoryCapturesProvider
 from shipany.bot.providers.secrets import SecretsProvider, StubSecretsProvider
+
+if t.TYPE_CHECKING:
+  from pathlib import Path
+
+  from shipany.bot.conversation.models.flow import Flow
 
 BinderCallable = t.Callable[[inject.Binder], None]
 
@@ -100,14 +106,16 @@ def valid_flow_with_conditional_responses() -> str:
               "$id": "start",
               "actions": [
                 {
+                  "name": "StateAction@1",
+                  "type": "store",
+                  "key": "username",
+                  "scope": ["user"],
+                  "value": "{{user.username}}",
+                },
+                {
                   "name": "TransitionAction@1",
                   "condition": {"in": ["hi", {"var": "message.text"}]},
                   "next-step": "hello-step",
-                },
-                {
-                  "name": "MessageAction@1",
-                  "type": "reply",
-                  "content": "👋!",
                 },
               ],
             },
@@ -115,10 +123,11 @@ def valid_flow_with_conditional_responses() -> str:
               "$id": "hello-step",
               "actions": [
                 {
-                  "name": "MessageAction@1",
-                  "type": "reply",
-                  "content": "Hey there 👋!",
-                }
+                  "name": "StateAction@1",
+                  "type": "load",
+                  "key": "username",
+                  "scope": ["user"],
+                },
               ],
             },
           ],
@@ -241,3 +250,14 @@ def valid_flow_with_store_action() -> str:
       ],
     }
   )
+
+
+@pytest.fixture()
+def flow_from_fixture(request: pytest.FixtureRequest, flow_as_fixture: str) -> Flow:
+  flow_as_str: str = request.getfixturevalue(flow_as_fixture)
+  return load(flow_as_str)
+
+
+@pytest.fixture()
+def v1_flow_fixtures_location(flows_path_factory: t.Callable[[int], Path]) -> Path:
+  return flows_path_factory(1)

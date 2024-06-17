@@ -41,7 +41,7 @@ class CapturesModifier:
     self._captures[self._key(key, scope)] = value
 
   @_validate_call
-  def get(self, key: str, *, scope: list[Scope]) -> str | None:  # noqa: ANN101
+  def get(self, key: str, *, scope: list[Scope]) -> str:  # noqa: ANN101
     if not scope:
       return self._locals[key]
     return self._captures[self._key(key, scope)]

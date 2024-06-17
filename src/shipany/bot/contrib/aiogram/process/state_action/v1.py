@@ -10,9 +10,10 @@ logger = logging.getLogger("StateAction@v1")
 
 
 def _update_captures(ctx: ConversationContext, action: StateAction) -> None:
-  if action.value is not None:
-    rendered_value = template_from_context(action.value, ctx, scopes=[], safe=True)
-    ctx.captures.set(action.key, rendered_value, scope=action.scope)
+  if action.value is None:
+    raise NotImplementedError("Value cannot be None for 'store' action type")
+  rendered_value = template_from_context(action.value, ctx, scopes=[], safe=True)
+  ctx.captures.set(action.key, rendered_value, scope=action.scope)
 
 
 def _remove_captures(ctx: ConversationContext, action: StateAction) -> None:
@@ -29,10 +30,9 @@ def _load_captures(ctx: ConversationContext, action: StateAction) -> None:
     logger.warning(f"Value '{action.value}' is ignored for 'load' action type.")
   try:
     value = ctx.captures.get(action.key, scope=action.scope)
-    if value is not None:
-      ctx.captures.set(action.key, value, scope=[])
+    ctx.captures.set(action.key, value, scope=[])
   except KeyError:
-    logger.warning(f"Key '{action.key}' doesn't exist.")
+    logger.warning(f"Key '{action.key}' in scope {action.scope} doesn't exist.")
 
 
 def process(ctx: ConversationContext, action: StateAction) -> Continue:
@@ -46,6 +46,6 @@ def process(ctx: ConversationContext, action: StateAction) -> Continue:
     case SupportedStateActionTypes.load:
       _load_captures(ctx, action)
 
-    case _:
+    case _:  # pragma: no cover
       t.assert_never(action.action_type)
   return Continue()

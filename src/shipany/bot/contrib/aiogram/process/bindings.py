@@ -21,7 +21,7 @@ def _load_children_bindings(binder: inject.Binder) -> None:
 
     try:
       bindings.default_bindings(binder)
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
       logger.warning("Module '%s' does not have 'default_bindings' function", bindings_module_name)
       continue
 

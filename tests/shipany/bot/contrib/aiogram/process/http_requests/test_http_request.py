@@ -55,6 +55,18 @@ class MockedResponse(BaseModel):
       {"status_code": "200", "text": "response text"},
       {"url": "http://localhost:7812/post", "method": "POST", "text": "response text"},
     ),
+    (
+      {},
+      {
+        "name": "HttpRequest@1",
+        "url": "http://localhost:7812/post",
+        "method": "POST",
+        "headers": {"Content-Type": "application/json"},
+        "body": {"foo": "bar"},
+      },
+      {},
+      {"url": "http://localhost:7812/post", "method": "POST", "text": "response text"},
+    ),
   ],
 )
 @pytest.mark.asyncio()

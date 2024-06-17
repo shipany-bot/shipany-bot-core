@@ -71,6 +71,7 @@ exclude_also = [
   "if (t\\.)?TYPE_CHECKING:",
   "assert_never",
   "t\\.Protocol",
+  "pytest.fail", # Unreachable code
 ]
 skip_covered = true
 fail_under = 90

@@ -44,6 +44,7 @@ class StateAction(BaseModel):
       "type": "store",
       "key": "",
       "value": "Echo bot",
+      "scope": ["user"]
     }
     ```
   - Set new variable in user state with expiration time:
@@ -53,8 +54,20 @@ class StateAction(BaseModel):
       "type": "store",
       "key": "mute",
       "value": "1",
-      "ttl": 3600
+      "ttl": 3600,
+      "scope": ["user"]
     }
+    ```
+
+  - Load variable from chat scope to current session:
+    ```json
+    {
+      "name": "StateAction@1",
+      "type": "load",
+      "key": "admin",
+      "scope": ["chat"]
+    }
+    ```
 
   """
 

@@ -13,7 +13,13 @@ def private_chat_1() -> Chat:
 
 @pytest.fixture()
 def user_1() -> User:
-  return User(id=1, is_bot=False, first_name="John", last_name="Doe")
+  return User(
+    id=1,
+    is_bot=False,
+    first_name="John",
+    last_name="Doe",
+    username="johndoe",
+  )
 
 
 @pytest.fixture()

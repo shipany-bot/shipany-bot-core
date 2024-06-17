@@ -17,7 +17,17 @@ class EventInspector:
     match self._event:
       case types.Message(from_user=types.User(id=user_id)):
         return str(user_id)
-    raise ValueError(f"Can't extract user id from {self._event!r}")
+      case types.MessageReactionUpdated(user=types.User(id=user_id)):
+        return str(user_id)
+    raise NotImplementedError(f"Can't extract user id from {self._event!r}")
+
+  def chat_id(self: t.Self) -> str:
+    match self._event:
+      case types.Message(chat=types.Chat(id=chat_id)):
+        return str(chat_id)
+      case types.MessageReactionUpdated(chat=types.Chat(id=chat_id)):
+        return str(chat_id)
+    raise NotImplementedError(f"Can't extract chat id from {self._event!r}")
 
 
 class AiogramHandleGenerator(HandleGenerator):
@@ -31,6 +41,7 @@ class AiogramHandleGenerator(HandleGenerator):
     return ":".join(
       [
         self._event_inspector.user_id() if Scope.user in scope else "_",
+        self._event_inspector.chat_id() if Scope.chat in scope else "_",
         key,
       ]
     )

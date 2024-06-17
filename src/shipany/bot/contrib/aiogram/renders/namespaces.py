@@ -20,8 +20,15 @@ def message_namespace(ctx: ConversationContext) -> Namespace | None:
 
 def user_namespace(ctx: ConversationContext) -> Namespace | None:
   match ctx.event:
-    case aiogram_types.Message(from_user=aiogram_types.User(first_name=first_name, last_name=last_name, id=id)):
-      return Namespace(id=id, first_name=first_name, last_name=last_name)
+    case aiogram_types.Message(
+      from_user=aiogram_types.User(first_name=first_name, last_name=last_name, id=id, username=username)
+    ):
+      return Namespace(
+        id=id,
+        first_name=first_name,
+        last_name=last_name,
+        username=username,
+      )
     case aiogram_types.MessageReactionUpdated(
       user=aiogram_types.User(first_name=first_name, last_name=last_name, id=id)
     ):
