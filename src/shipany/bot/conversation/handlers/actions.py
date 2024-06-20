@@ -91,11 +91,8 @@ def _func_process_module(module_name: str, class_name: str, class_version: str) 
   except ImportError:
     raise NotImplementedError(f"Module {full_module_name} is not importable") from None
 
-  try:
-    if not isinstance(module, ModuleWithProcessFunction):
-      raise NotImplementedError(f"process() method in {full_module_name} should have 2 parameters: ctx, action")
-  except AttributeError:
-    raise NotImplementedError(f"process() method cannot be found in {full_module_name}") from None
+  if not isinstance(module, ModuleWithProcessFunction):
+    raise NotImplementedError(f"process() method in {full_module_name} should have 2 parameters: ctx, action")
 
   return module
 

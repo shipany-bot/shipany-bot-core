@@ -76,7 +76,7 @@ async def _hook_endpoint(
 ) -> WebhookResponse:
   try:
     activation, conversation = next(_find_webhook_activation(flow, request.url.path, request.method))
-  except StopIteration:
+  except StopIteration:  # pragma: no cover
     raise HTTPException(detail="Webhook handler not found", status_code=404) from None
 
   webhook = activation.webhook

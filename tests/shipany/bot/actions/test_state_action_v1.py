@@ -25,5 +25,5 @@ def test_remove_type_with_value() -> None:
         "value": "value",
       }
     )
-  except ValidationError:
+  except ValidationError:  # pragma: no cover
     pytest.fail("Unexpected ValidationError")

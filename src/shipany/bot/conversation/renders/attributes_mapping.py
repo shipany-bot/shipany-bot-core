@@ -32,10 +32,7 @@ class VariablesGetter(Mapping[str, t.Any]):
     if key == "secrets":
       return self._ctx.runtime.secrets if self._safe else {key: "*****" for key in self._ctx.runtime.secrets}
 
-    if value := self._ctx.captures.get(key, scope=self._captures_scopes):
-      return value
-
-    raise KeyError(key)
+    return self._ctx.captures.get(key, scope=self._captures_scopes)
 
   def __iter__(self: t.Self) -> t.Iterator[str]:
     raise NotImplementedError
