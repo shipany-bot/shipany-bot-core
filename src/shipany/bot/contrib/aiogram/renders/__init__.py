@@ -1,1 +1,0 @@
-from .jinja_env import template_from_context as template_from_context

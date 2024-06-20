@@ -10,9 +10,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from shipany.bot.contrib.aiogram.factories import telegram_objects
 from shipany.bot.conversation import errors
+from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import Conversation, Flow, WebhookActivation
-from shipany.bot.runtime import context
 
 if t.TYPE_CHECKING:
   from shipany.bot.config import BotConfig
@@ -76,7 +76,7 @@ async def _hook_endpoint(
 ) -> WebhookResponse:
   try:
     activation, conversation = next(_find_webhook_activation(flow, request.url.path, request.method))
-  except StopIteration:
+  except StopIteration:  # pragma: no cover
     raise HTTPException(detail="Webhook handler not found", status_code=404) from None
 
   webhook = activation.webhook
@@ -88,7 +88,7 @@ async def _hook_endpoint(
     e.status_code = webhook.status_code_error
     raise e from None
 
-  with context.context() as ctx:
+  with conversation_context() as ctx:
     try:
       handler = ActivationHandler(ctx, activation)
       await handler(conversation.steps)

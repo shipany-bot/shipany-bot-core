@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import inspect
 import logging
 import re
@@ -8,8 +9,8 @@ from collections.abc import Awaitable  # noqa: TCH003
 
 from pydantic import BaseModel, ConfigDict, ValidationError, validate_call
 
+from shipany.bot.conversation.context import ConversationContext  # noqa: TCH001
 from shipany.bot.conversation.models.action import BaseAction  # noqa: TCH001
-from shipany.bot.runtime.context import Context  # noqa: TCH001
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ def _camel_to_snake(name: str) -> str:
 def _find_action_module(module_name: str, class_name: str, class_version: str) -> type[BaseModel]:
   full_module_name = f"shipany.bot.actions.{module_name}.{class_version}"
   try:
-    module = __import__(full_module_name, fromlist=[class_version])
+    module = importlib.import_module(full_module_name)
   except ImportError:
     raise NotImplementedError(f"Module {full_module_name} is not importable") from None
 
@@ -80,27 +81,24 @@ def _find_action_module(module_name: str, class_name: str, class_version: str) -
 
 @t.runtime_checkable
 class ModuleWithProcessFunction(t.Protocol):
-  def process(self: t.Self, ctx: Context, action: BaseModel) -> DispatchedResult: ...
+  def process(self: t.Self, ctx: ConversationContext, action: BaseModel) -> DispatchedResult: ...
 
 
 def _func_process_module(module_name: str, class_name: str, class_version: str) -> ModuleWithProcessFunction:
   full_module_name = f"shipany.bot.contrib.aiogram.process.{module_name}.{class_version}"
   try:
-    module = __import__(full_module_name, fromlist=[class_version])
+    module = importlib.import_module(full_module_name)
   except ImportError:
     raise NotImplementedError(f"Module {full_module_name} is not importable") from None
 
-  try:
-    if not isinstance(module, ModuleWithProcessFunction):
-      raise NotImplementedError(f"process() method in {full_module_name} should have 2 parameters: ctx, action")
-  except AttributeError:
-    raise NotImplementedError(f"process() method cannot be found in {full_module_name}") from None
+  if not isinstance(module, ModuleWithProcessFunction):
+    raise NotImplementedError(f"process() method in {full_module_name} should have 2 parameters: ctx, action")
 
   return module
 
 
 @validate_call
-async def handle(action: BaseAction, ctx: Context) -> DispatchedResult:
+async def handle(action: BaseAction, ctx: ConversationContext) -> DispatchedResult:
   class_name, class_version = _split_action_name(action.name)
   module_name = _camel_to_snake(class_name)
 

@@ -3,11 +3,11 @@ from __future__ import annotations
 import typing as t
 
 import pytest
-from aiogram.types import TelegramObject
+from pydantic import BaseModel
 
 from shipany.bot.actions.http_request.v1 import HttpRequest
-from shipany.bot.contrib.aiogram.context import ExtendedContext
 from shipany.bot.contrib.aiogram.process.http_request.v1 import process
+from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.handlers.actions import Continue
 
 if t.TYPE_CHECKING:
@@ -15,8 +15,14 @@ if t.TYPE_CHECKING:
   from pytest_httpx import HTTPXMock
 
 
+class MockedResponse(BaseModel):
+  url: str
+  status_code: int = 200
+  text: str
+
+
 @pytest.mark.parametrize(
-  ("captures_before", "raw_action", "captures_after", "response"),
+  ("setup_locals", "raw_action", "captures_after", "response"),
   [
     (
       {},
@@ -49,22 +55,33 @@ if t.TYPE_CHECKING:
       {"status_code": "200", "text": "response text"},
       {"url": "http://localhost:7812/post", "method": "POST", "text": "response text"},
     ),
+    (
+      {},
+      {
+        "name": "HttpRequest@1",
+        "url": "http://localhost:7812/post",
+        "method": "POST",
+        "headers": {"Content-Type": "application/json"},
+        "body": {"foo": "bar"},
+      },
+      {},
+      {"url": "http://localhost:7812/post", "method": "POST", "text": "response text"},
+    ),
   ],
 )
 @pytest.mark.asyncio()
 async def test_state_action(
   raw_action: dict[str, JsonValue],
-  captures_before: dict[str, str],
   captures_after: dict[str, str],
   response: dict[str, JsonValue],
   httpx_mock: HTTPXMock,
 ) -> None:
-  httpx_mock.add_response(**response)
-  ctx = ExtendedContext(captures=captures_before, event=TelegramObject())
-  action = HttpRequest(**raw_action)
-  result = await process(ctx, action)
-  match result:
-    case Continue():
-      assert ctx.captures == captures_after
-    case _:  # pragma: no cover
-      pytest.fail("Unexpected result")
+  httpx_mock.add_response(**MockedResponse.model_validate(response).model_dump())
+  with conversation_context() as ctx:
+    action = HttpRequest.model_validate(raw_action)
+    result = await process(ctx, action)
+    match result:
+      case Continue():
+        assert ctx.captures == captures_after
+      case _:  # pragma: no cover
+        pytest.fail("Unexpected result")

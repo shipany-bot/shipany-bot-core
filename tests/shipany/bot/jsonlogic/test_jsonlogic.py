@@ -1,14 +1,14 @@
 import typing as t
-from collections.abc import Mapping
 
 import pytest
 from pydantic import JsonValue, TypeAdapter, ValidationError
 
 from shipany.bot import jsonlogic as jl
+from shipany.bot.conversation.context import conversation_context
 
 
 @pytest.mark.parametrize(
-  ("raw_logic", "data", "expected"),
+  ("raw_logic", "setup_locals", "expected"),
   [
     ({"in": ["Hello", "Hello World!"]}, None, True),
     ({"in": ["Hello", ["Hello", "World!"]]}, None, True),
@@ -23,21 +23,22 @@ from shipany.bot import jsonlogic as jl
     ({"and": [{"==": [1, 1]}, {"in": ["c", "abc"]}]}, None, True),
     ({"not": [True]}, None, False),
     ({"not": [{"==": [1, 1]}]}, None, False),
-    ({"var": "a"}, {"a": 1}, 1),
-    ({"==": [{"var": "a"}, 1]}, {"a": 1}, 1),
-    ({"var": "a"}, {"v": True, "2": "a"}, None),
-    ({"in": [{"var": "a"}, [3, 2, 1]]}, {"a": 1}, True),
+    ({"var": "a"}, {"a": "1"}, "1"),
+    ({"==": [{"var": "a"}, "1"]}, {"a": "1"}, True),
+    ({"var": "a"}, {"v": "2", "2": "a"}, ""),
+    ({"in": [{"var": "a"}, ["3", "2", "1"]]}, {"a": "1"}, True),
     ({"==": ["hello", {"var": "text"}]}, {"text": "hello"}, True),
     ({"or": [{"==": ["hello", {"var": "text"}]}, {"==": ["hi", {"var": "text"}]}]}, {"text": "hello"}, True),
   ],
 )
-def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, data: Mapping[str, JsonValue], expected: JsonValue) -> None:
-  logic: jl.JsonLogic = t.cast(jl.JsonLogic, TypeAdapter(jl.JsonLogic).validate_python(raw_logic))
-  assert jl.apply(logic, data) == expected
+def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, expected: JsonValue) -> None:
+  with conversation_context() as ctx:
+    logic: jl.JsonLogic = t.cast(jl.JsonLogic, TypeAdapter(jl.JsonLogic).validate_python(raw_logic))
+    assert jl.apply(logic, ctx) == expected
 
 
 @pytest.mark.parametrize(
-  ("string_logic", "data", "expected"),
+  ("string_logic", "setup_locals", "expected"),
   [
     ('{"in": ["Hello", "Hello World!"]}', None, True),
     ('{"in": ["Hello", ["Hello", "World!"]]}', None, True),
@@ -53,17 +54,18 @@ def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, data: Mapping[str, J
     ('{"and": [{"==": [1, 1]}, {"in": ["c", "abc"]}]}', None, True),
     ('{"not": [true]}', None, False),
     ('{"not": [{"==": [1, 1]}]}', None, False),
-    ('{"var": "a"}', {"a": 1}, 1),
-    ('{"==": [{"var": "a"}, 1]}', {"a": 1}, 1),
-    ('{"var": "a"}', {"v": True, "2": "a"}, None),
-    ('{"in": [{"var": "a"}, [3, 2, 1]]}', {"a": 1}, True),
+    ('{"var": "a"}', {"a": "1"}, "1"),
+    ('{"==": [{"var": "a"}, 1]}', {"a": "1"}, False),
+    ('{"var": "a"}', {"v": "2", "2": "a"}, ""),
+    ('{"in": [{"var": "a"}, ["3", "2", "1"]]}', {"a": "1"}, True),
     ('{"==": ["hello", {"var": "text"}]}', {"text": "hello"}, True),
     ('{"or": [{"==": ["hello", {"var": "text"}]}, {"==": ["hi", {"var": "text"}]}]}', {"text": "hello"}, True),
   ],
 )
-def test_jsonlogic_rules_as_json_strings(string_logic: str, data: Mapping[str, JsonValue], expected: JsonValue) -> None:
-  logic: jl.JsonLogic = t.cast(jl.JsonLogic, TypeAdapter(jl.JsonLogic).validate_json(string_logic))
-  assert jl.apply(logic, data) == expected
+def test_jsonlogic_rules_as_json_strings(string_logic: str, expected: JsonValue) -> None:
+  with conversation_context() as ctx:
+    logic: jl.JsonLogic = t.cast(jl.JsonLogic, TypeAdapter(jl.JsonLogic).validate_json(string_logic))
+    assert jl.apply(logic, ctx) == expected
 
 
 @pytest.mark.parametrize(
