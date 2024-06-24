@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import typing as t
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 
 import inject
 from pydantic import BaseModel, ConfigDict, Field
@@ -24,8 +24,8 @@ class ConversationContext(BaseModel):
   model_config = ConfigDict(extra="forbid", frozen=True, arbitrary_types_allowed=True)
 
 
-@contextmanager
-def conversation_context(event: t.Any = None) -> t.Iterator[ConversationContext]:  # noqa: ANN401
+@asynccontextmanager
+async def conversation_context(event: t.Any = None) -> t.AsyncIterator[ConversationContext]:  # noqa: ANN401
   captures_provider: CapturesProvider | None = None
   try:
     captures_provider = inject.instance(CapturesProvider)
@@ -44,5 +44,5 @@ def conversation_context(event: t.Any = None) -> t.Iterator[ConversationContext]
     )
     raise
 
-  with runtime_context() as runtime, captures_provider.snapshot(handle_generator) as captures:
+  async with runtime_context() as runtime, captures_provider.snapshot(handle_generator) as captures:
     yield ConversationContext(captures=captures, runtime=runtime, event=event)

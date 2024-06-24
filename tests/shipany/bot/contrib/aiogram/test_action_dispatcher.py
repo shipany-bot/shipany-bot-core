@@ -15,37 +15,33 @@ if t.TYPE_CHECKING:
 
 
 @pytest.fixture()
-def default_context(hello_message: Message) -> t.Iterator[ConversationContext]:
-  with conversation_context(event=hello_message) as ctx:
+async def default_context(hello_message: Message) -> t.AsyncIterator[ConversationContext]:
+  async with conversation_context(event=hello_message) as ctx:
     yield ctx
 
 
-@pytest.mark.asyncio()
 async def test_action_executor_dispatch_unsupported_action() -> None:
   message = Message(
     message_id=1, date=datetime.datetime.now(tz=datetime.timezone.utc), chat=Chat(id=1, type="private", username="test")
   )
-  with conversation_context(event=message) as ctx:
+  async with conversation_context(event=message) as ctx:
     action = BaseAction(name="unsupported@1")
     with pytest.raises(NotImplementedError, match="is not importable"):
       await handle(action, ctx)
 
 
-@pytest.mark.asyncio()
 async def test_action_executor_dispatch_answer(default_context: ConversationContext) -> None:
   action = BaseAction.model_validate({"name": "MessageAction@1", "type": "answer", "content": "Hello, World!"})
   result = await handle(action, default_context)
   assert isinstance(result, AwaitObjectAndContinue)
 
 
-@pytest.mark.asyncio()
 async def test_action_executor_dispatch_reply(default_context: ConversationContext) -> None:
   action = BaseAction.model_validate({"name": "MessageAction@1", "type": "reply", "content": "Hello, World!"})
   result = await handle(action, default_context)
   assert isinstance(result, AwaitObjectAndContinue)
 
 
-@pytest.mark.asyncio()
 async def test_action_executor_dispatch_transition(default_context: ConversationContext) -> None:
   action = BaseAction.model_validate({"name": "TransitionAction@1", "next-step": "hello", "condition": None})
   result = await handle(action, default_context)
@@ -53,7 +49,6 @@ async def test_action_executor_dispatch_transition(default_context: Conversation
   assert isinstance(result, GoToStep)
 
 
-@pytest.mark.asyncio()
 async def test_action_executor_dispatch_store(default_context: ConversationContext) -> None:
   action = BaseAction.model_validate({"name": "StateAction@1", "type": "store", "key": "hello", "value": "world"})
   result = await handle(action, default_context)
@@ -61,7 +56,6 @@ async def test_action_executor_dispatch_store(default_context: ConversationConte
   assert isinstance(result, Continue)
 
 
-@pytest.mark.asyncio()
 async def test_awaitable_handler(httpx_mock: HTTPXMock, default_context: ConversationContext) -> None:
   httpx_mock.add_response(url="http://localhost:7812/post", method="POST", text="response text")
 
@@ -78,7 +72,6 @@ async def test_awaitable_handler(httpx_mock: HTTPXMock, default_context: Convers
   assert isinstance(result, Continue)
 
 
-@pytest.mark.asyncio()
 async def test_handler_can_terminate(default_context: ConversationContext) -> None:
   action = BaseAction.model_validate(
     {

@@ -88,7 +88,7 @@ async def _hook_endpoint(
     e.status_code = webhook.status_code_error
     raise e from None
 
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     try:
       handler = ActivationHandler(ctx, activation)
       await handler(conversation.steps)

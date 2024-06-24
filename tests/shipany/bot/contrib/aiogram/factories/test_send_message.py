@@ -18,12 +18,15 @@ from shipany.bot.conversation.context import conversation_context
     MessageAction.model_validate({"name": "MessageAction@1", "type": "answer", "content": "Hello"}),
   ],
 )
-def test_send_message_is_constructed(telegram_event: TelegramObject, action: MessageAction) -> None:
-  with conversation_context(event=telegram_event) as ctx:
+async def test_send_message_is_constructed(telegram_event: TelegramObject, action: MessageAction) -> None:
+  async with conversation_context(event=telegram_event) as ctx:
     method = construct_from(ctx, action)
     assert method
 
 
-def test_send_message_is_not_constructed() -> None:
-  with pytest.raises(errors.NotImplementedError), conversation_context() as ctx:
-    construct_from(ctx, MessageAction.model_validate({"name": "MessageAction@1", "type": "reply", "content": "Hello"}))
+async def test_send_message_is_not_constructed() -> None:
+  with pytest.raises(errors.NotImplementedError):
+    async with conversation_context() as ctx:
+      construct_from(
+        ctx, MessageAction.model_validate({"name": "MessageAction@1", "type": "reply", "content": "Hello"})
+      )

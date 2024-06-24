@@ -31,8 +31,8 @@ from shipany.bot.conversation.context import conversation_context
     ({"or": [{"==": ["hello", {"var": "text"}]}, {"==": ["hi", {"var": "text"}]}]}, {"text": "hello"}, True),
   ],
 )
-def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, expected: JsonValue) -> None:
-  with conversation_context() as ctx:
+async def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, expected: JsonValue) -> None:
+  async with conversation_context() as ctx:
     logic: jl.JsonLogic = t.cast(jl.JsonLogic, TypeAdapter(jl.JsonLogic).validate_python(raw_logic))
     assert jl.apply(logic, ctx) == expected
 
@@ -62,8 +62,8 @@ def test_jsonlogic_rules_as_py_object(raw_logic: JsonValue, expected: JsonValue)
     ('{"or": [{"==": ["hello", {"var": "text"}]}, {"==": ["hi", {"var": "text"}]}]}', {"text": "hello"}, True),
   ],
 )
-def test_jsonlogic_rules_as_json_strings(string_logic: str, expected: JsonValue) -> None:
-  with conversation_context() as ctx:
+async def test_jsonlogic_rules_as_json_strings(string_logic: str, expected: JsonValue) -> None:
+  async with conversation_context() as ctx:
     logic: jl.JsonLogic = t.cast(jl.JsonLogic, TypeAdapter(jl.JsonLogic).validate_json(string_logic))
     assert jl.apply(logic, ctx) == expected
 

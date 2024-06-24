@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import typing as t
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 
 from pydantic import ConfigDict, validate_call
 
@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 
 
 class CapturesProvider:
-  @contextmanager
-  def snapshot(self: t.Self, handle_generator: HandleGenerator) -> t.Iterator[CapturesModifier]:
+  @asynccontextmanager
+  async def snapshot(self: t.Self, handle_generator: HandleGenerator) -> t.AsyncIterator[CapturesModifier]:
     raise NotImplementedError
+    yield CapturesModifier({}, {}, handle_generator)  # tweak to make mypy happy
 
 
 _validate_call = validate_call(config=ConfigDict(arbitrary_types_allowed=True), validate_return=True)
@@ -73,6 +74,6 @@ class InMemoryCapturesProvider:
     self._locals: dict[str, str] = dict(**setup_locals) if setup_locals else {}
     self._captures: dict[str, str] = dict(**setup_captures) if setup_captures else {}
 
-  @contextmanager
-  def snapshot(self: t.Self, handle_generator: HandleGenerator) -> t.Iterator[CapturesModifier]:
+  @asynccontextmanager
+  async def snapshot(self: t.Self, handle_generator: HandleGenerator) -> t.AsyncIterator[CapturesModifier]:
     yield CapturesModifier(self._captures, self._locals, handle_generator)

@@ -57,6 +57,9 @@ source = [
   "tests",
 ]
 
+[tool.pytest.ini_options]
+asyncio_mode="auto"  # dismiss numerous decorators like @pytest.mark.asyncio
+
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 exclude_also = [

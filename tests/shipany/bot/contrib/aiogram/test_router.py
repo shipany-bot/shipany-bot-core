@@ -65,7 +65,6 @@ def test_create_nested_router_with_one_conversation() -> None:
     ),
   ],
 )
-@pytest.mark.asyncio()
 async def test_handle_failed_conditional_event(activation: Activation, hello_message: Message) -> None:
   steps = [
     Step.model_validate({"$id": "$1", "actions": [{"name": "MessageAction@1", "type": "reply", "content": "Hello"}]})
@@ -84,7 +83,6 @@ async def test_handle_failed_conditional_event(activation: Activation, hello_mes
     ),
   ],
 )
-@pytest.mark.asyncio()
 async def test_handle_conditional_event(activation: Activation, hello_message: Message) -> None:
   steps = [
     Step.model_validate(
@@ -128,7 +126,6 @@ async def test_handle_conditional_event(activation: Activation, hello_message: M
     }"""
   ],
 )
-@pytest.mark.asyncio()
 async def test_create_flow_with_many_activations(conversation: str) -> None:
   flow = load(conversation)
   create(flow)
