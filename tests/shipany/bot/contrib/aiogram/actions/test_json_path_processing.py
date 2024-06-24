@@ -55,10 +55,9 @@ from shipany.bot.conversation.handlers.actions import Continue, Terminate
     ),
   ],
 )
-@pytest.mark.asyncio()
 async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[str, str]) -> None:
   action = JsonPathAction.model_validate(raw_action)
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case Continue():
@@ -78,9 +77,8 @@ async def test_state_action(raw_action: dict[str, t.Any], captures_after: dict[s
     },
   ],
 )
-@pytest.mark.asyncio()
 async def test_invalid_state_action(invalid_action: dict[str, t.Any]) -> None:
   action = JsonPathAction.model_validate(invalid_action)
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     result = process(ctx, action)
     assert isinstance(result, Terminate)

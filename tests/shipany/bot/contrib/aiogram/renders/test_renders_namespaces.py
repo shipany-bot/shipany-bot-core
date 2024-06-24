@@ -19,6 +19,6 @@ if t.TYPE_CHECKING:
     namespaces.reaction_namespace,
   ],
 )
-def test_another_event(namespace_func: t.Callable[[ConversationContext], Namespace | None]) -> None:
-  with conversation_context() as ctx:
+async def test_another_event(namespace_func: t.Callable[[ConversationContext], Namespace | None]) -> None:
+  async with conversation_context() as ctx:
     assert namespace_func(ctx) is None

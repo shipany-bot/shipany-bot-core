@@ -10,10 +10,9 @@ from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models.flow import Flow
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize("flow_as_fixture", ["valid_flow_with_conditional_responses"])
 async def test_transition_to_next_step_with_condition(flow_from_fixture: Flow, hi_message: Message) -> None:
-  with conversation_context(event=hi_message) as ctx:
+  async with conversation_context(event=hi_message) as ctx:
     handler = ActivationHandler(ctx, flow_from_fixture.conversations[0].activations[0])
     await handler(flow_from_fixture.conversations[0].steps)
 
@@ -39,7 +38,6 @@ def valid_flow_with_echoing() -> str:
   )
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize("flow_as_fixture", ["valid_flow_with_echoing"])
 async def test_awaiting_step(hi_message: Message, flow_from_fixture: Flow, monkeypatch: pytest.MonkeyPatch) -> None:
   conversation = flow_from_fixture.conversations[0]
@@ -50,6 +48,6 @@ async def test_awaiting_step(hi_message: Message, flow_from_fixture: Flow, monke
 
   monkeypatch.setattr(methods, "SendMessage", mocked_send_message)
   for activation in conversation.activations:
-    with conversation_context(hi_message) as default_context:
+    async with conversation_context(hi_message) as default_context:
       handler = ActivationHandler(default_context, activation)
       await handler(conversation.steps)

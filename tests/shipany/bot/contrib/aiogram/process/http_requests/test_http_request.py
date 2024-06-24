@@ -69,7 +69,6 @@ class MockedResponse(BaseModel):
     ),
   ],
 )
-@pytest.mark.asyncio()
 async def test_state_action(
   raw_action: dict[str, JsonValue],
   captures_after: dict[str, str],
@@ -77,7 +76,7 @@ async def test_state_action(
   httpx_mock: HTTPXMock,
 ) -> None:
   httpx_mock.add_response(**MockedResponse.model_validate(response).model_dump())
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     action = HttpRequest.model_validate(raw_action)
     result = await process(ctx, action)
     match result:

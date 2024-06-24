@@ -8,7 +8,6 @@ from shipany.bot.conversation.models.conversation import Conversation
 from shipany.bot.conversation.models.flow import Flow
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize(
   "flow_as_fixture",
   [
@@ -20,21 +19,20 @@ from shipany.bot.conversation.models.flow import Flow
   ],
 )
 async def test_it_raises_when_unknown_action_met(flow_from_fixture: Flow) -> None:
-  with conversation_context() as default_context:
+  async with conversation_context() as default_context:
     handler = ActivationHandler(default_context, flow_from_fixture.conversations[0].activations[0])
     with pytest.raises(ActionNotImplementedError):
       await handler(flow_from_fixture.conversations[0].steps)
 
 
-@pytest.mark.asyncio()
 @pytest.mark.parametrize("flow_as_fixture", ["valid_flow_with_store_action"])
 async def test_it_returns_nothing_on_empty_step(flow_from_fixture: Flow) -> None:
-  with conversation_context() as default_context:
+  async with conversation_context() as default_context:
     handler = ActivationHandler(default_context, flow_from_fixture.conversations[0].activations[0])
     await handler(flow_from_fixture.conversations[0].steps)
 
 
-def test_actions_on_step_enter_happy_path() -> None:
+async def test_actions_on_step_enter_happy_path() -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",
@@ -47,13 +45,13 @@ def test_actions_on_step_enter_happy_path() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    with conversation_context() as default_context:
+    async with conversation_context() as default_context:
       navigator = ActivationHandler(default_context, activation)
       actions = list(navigator.traverse_actions(conversation.steps))
       assert len(actions) == 1
 
 
-def test_empty_actions_in() -> None:
+async def test_empty_actions_in() -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",
@@ -64,12 +62,12 @@ def test_empty_actions_in() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    with conversation_context() as default_context:
+    async with conversation_context() as default_context:
       navigator = ActivationHandler(default_context, activation)
       assert len(list(navigator.traverse_actions(conversation.steps))) == 0
 
 
-def test_actions_on_step_enter_no_step() -> None:
+async def test_actions_on_step_enter_no_step() -> None:
   conversation = Conversation.model_validate(
     {
       "$id": "start",
@@ -79,7 +77,7 @@ def test_actions_on_step_enter_no_step() -> None:
   )
   assert len(conversation.activations) == 1
   try:
-    with conversation_context() as default_context:
+    async with conversation_context() as default_context:
       navigator = ActivationHandler(default_context, conversation.activations[0])
       list(navigator.traverse_actions(conversation.steps))
     pytest.fail("Expected exception but none was raised")  # pragma: no cover
@@ -87,7 +85,6 @@ def test_actions_on_step_enter_no_step() -> None:
     pass
 
 
-@pytest.mark.asyncio()
 async def test_termination_at_first_step() -> None:
   conversation = Conversation.model_validate(
     {
@@ -116,12 +113,11 @@ async def test_termination_at_first_step() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    with conversation_context() as default_context:
+    async with conversation_context() as default_context:
       handler = ActivationHandler(default_context, activation)
       await handler(conversation.steps)
 
 
-@pytest.mark.asyncio()
 async def test_transition_to_next_step() -> None:
   conversation = Conversation.model_validate(
     {
@@ -139,6 +135,6 @@ async def test_transition_to_next_step() -> None:
   assert len(conversation.activations) == 1
 
   for activation in conversation.activations:
-    with conversation_context() as default_context:
+    async with conversation_context() as default_context:
       handler = ActivationHandler(default_context, activation)
       await handler(conversation.steps)

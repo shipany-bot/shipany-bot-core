@@ -1,6 +1,6 @@
 import logging
 import typing as t
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 
 import inject
 from pydantic import BaseModel, ConfigDict, Field
@@ -15,8 +15,8 @@ class RuntimeContext(BaseModel):
   model_config = ConfigDict(extra="forbid", frozen=True)
 
 
-@contextmanager
-def runtime_context() -> t.Iterator[RuntimeContext]:
+@asynccontextmanager
+async def runtime_context() -> t.AsyncIterator[RuntimeContext]:
   try:
     secrets_provider = inject.instance(SecretsProvider)
   except inject.InjectorException:  # pragma: no cover
@@ -25,5 +25,5 @@ def runtime_context() -> t.Iterator[RuntimeContext]:
     )
     raise
 
-  with secrets_provider.snapshot() as snapshot:
+  async with secrets_provider.snapshot() as snapshot:
     yield RuntimeContext(secrets=snapshot)

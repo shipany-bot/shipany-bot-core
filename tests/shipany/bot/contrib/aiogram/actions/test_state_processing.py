@@ -48,9 +48,8 @@ from shipany.bot.conversation.handlers.actions import Continue
     ),
   ],
 )
-@pytest.mark.asyncio()
 async def test_state_action(action: StateAction, captures_after: dict[str, str]) -> None:
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case Continue():

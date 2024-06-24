@@ -16,8 +16,8 @@ if t.TYPE_CHECKING:
   "setup_locals",
   [{"test": "test"}],
 )
-def test_getter_behaves_like_mapping(hi_message: Message) -> None:
-  with conversation_context(event=hi_message) as ctx:
+async def test_getter_behaves_like_mapping(hi_message: Message) -> None:
+  async with conversation_context(event=hi_message) as ctx:
     getter = VariablesGetter(ctx, captures_scopes=[], safe=True)
     assert getter["test"] == "test"
     assert "test" in getter
@@ -25,8 +25,8 @@ def test_getter_behaves_like_mapping(hi_message: Message) -> None:
       getter["not_found"]
 
 
-def test_getter_returns_only_text_value(hello_message: Message) -> None:
-  with conversation_context(event=hello_message) as ctx:
+async def test_getter_returns_only_text_value(hello_message: Message) -> None:
+  async with conversation_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx, captures_scopes=[], safe=True)
     assert getter["message"].text == hello_message.text
     with pytest.raises(AttributeError, match="message_id"):
@@ -37,8 +37,8 @@ def test_getter_returns_only_text_value(hello_message: Message) -> None:
   "setup_secrets",
   [{"secr3t": "passw0rd"}],
 )
-def test_getter_returns_secrets(hello_message: Message) -> None:
-  with conversation_context(event=hello_message) as ctx:
+async def test_getter_returns_secrets(hello_message: Message) -> None:
+  async with conversation_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx, captures_scopes=[], safe=True)
     assert "secr3t" in getter["secrets"]
     assert getter["secrets"]["secr3t"] == "passw0rd"
@@ -48,8 +48,8 @@ def test_getter_returns_secrets(hello_message: Message) -> None:
   "setup_secrets",
   [{"secr3t": "passw0rd"}],
 )
-def test_getter_returns_secrets_when_unsafe(hello_message: Message) -> None:
-  with conversation_context(event=hello_message) as ctx:
+async def test_getter_returns_secrets_when_unsafe(hello_message: Message) -> None:
+  async with conversation_context(event=hello_message) as ctx:
     getter = VariablesGetter(ctx, captures_scopes=[], safe=False)
     assert "secr3t" in getter["secrets"]
     assert getter["secrets"]["secr3t"] != "passw0rd"
@@ -67,6 +67,8 @@ def test_getter_returns_secrets_when_unsafe(hello_message: Message) -> None:
     ("message_reaction_updated", "reaction.old_reaction[0]", ""),
   ],
 )
-def test_getter_returns_user_attributes(telegram_event: TelegramObject, attribute: str, expected_result: str) -> None:
-  with conversation_context(event=telegram_event) as ctx:
+async def test_getter_returns_user_attributes(
+  telegram_event: TelegramObject, attribute: str, expected_result: str
+) -> None:
+  async with conversation_context(event=telegram_event) as ctx:
     assert value_from_context(attribute, ctx, scopes=[], safe=False) == expected_result

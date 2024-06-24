@@ -21,9 +21,8 @@ from shipany.bot.conversation.handlers.actions import Continue, GoToStep
     ),
   ],
 )
-@pytest.mark.asyncio()
 async def test_transition_action_to_next_step(action: TransitionAction, expected_step_id: str) -> None:
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case GoToStep(step_id=step_id):
@@ -38,9 +37,8 @@ async def test_transition_action_to_next_step(action: TransitionAction, expected
     TransitionAction.model_validate({"name": "TransitionAction@1", "next-step": "hello", "condition": {"==": [0, 1]}}),
   ],
 )
-@pytest.mark.asyncio()
 async def test_no_transition_action_to_next_step(action: TransitionAction) -> None:
-  with conversation_context() as ctx:
+  async with conversation_context() as ctx:
     result = process(ctx, action)
     match result:
       case Continue():
