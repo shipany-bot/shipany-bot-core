@@ -1,26 +1,22 @@
-from typing import Any, Coroutine
-
-from aiogram import Bot
-from aiogram.client.session.aiohttp import AiohttpSession
-from aiogram.client.telegram import TelegramAPIServer
-from aiogram.dispatcher.dispatcher import Dispatcher
+import asyncio
+import logging
 
 from shipany.bot.config import BotConfig
 from shipany.bot.contrib.aiogram import router
+from shipany.bot.contrib.aiogram.factories.telegram_objects import bot, dispatcher
 from shipany.bot.conversation.models import Flow
 
+logger = logging.getLogger(__name__)
 
-def dispatcher(flow: Flow) -> Dispatcher:
-  dp = Dispatcher()
+
+async def serve(flow: Flow) -> None:
+  bot_config = BotConfig()
+  instance = bot()
+
+  dp = dispatcher()
   dp.include_router(router.create(flow))
-  return dp
 
+  if bot_config.telegram_webhook_url:
+    return await asyncio.sleep(0)  # no op, because when webhook is set, the bot will be updated by the telegram server
 
-def create_instance(config: BotConfig) -> Bot:
-  session = AiohttpSession(api=TelegramAPIServer.from_base(config.api_url))
-  return Bot(config.token.get_secret_value(), session=session)
-
-
-def serve(flow: Flow, bot_config: BotConfig) -> Coroutine[Any, Any, None]:
-  instance = create_instance(bot_config)
-  return dispatcher(flow).start_polling(instance)
+  return await dp.start_polling(instance)

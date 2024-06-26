@@ -1,4 +1,15 @@
 
+.. _changelog-0.7.0a1:
+
+0.7.0a1 — 2024-06-28
+====================
+
+Added
+-----
+
+- Webhook mode is supported now. You need to configure such env variables like `TELEGRAM_WEBHOOK_URL` and `WEB_BOT_WEBHOOK_PATH` to enable this mode. The Telegram will send messages to the specified URL using the optional secret `WEB_BOT_WEBHOOK_SECRET`. You need to ensure that the bot properly configured behind the proxy if there is any. You can use any external webhook payload delivery service to test the connection locally.
+- In order to track the events when the web server is ready, the new class `WebserverEventsDispatcher` was introduced. It allows you to subscribe to the `on_startup`, `on_shutdown`, and `on_updates` events.
+
 .. _changelog-0.6.0a1:
 
 0.6.0a1 — 2024-06-20

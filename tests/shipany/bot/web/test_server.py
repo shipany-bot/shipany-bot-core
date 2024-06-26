@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from shipany.bot.contrib.aiogram.factories import telegram_objects
 from shipany.bot.conversation.loader import load
-from shipany.bot.web.server import add_webhooks, app
+from shipany.bot.web.server import add_bot_webhook, add_webhooks, app
 
 
 def test_root(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -55,3 +55,26 @@ def test_webhook_with_failing_precondition(valid_flow_with_webhook_activations: 
   response = client.post("/hook_with_failing_precondition?token=secret")
   assert response.status_code == 200
   assert response.json() == {"message": "The condition is not met. Skipping the handler."}
+
+
+def test_telegram_webhook_invalid_secret_in_headers(monkeypatch: pytest.MonkeyPatch) -> None:
+  with monkeypatch.context() as m:
+    m.setenv("WEB_BOT_WEBHOOK_SECRET", "secret")
+    client = TestClient(app)
+    add_bot_webhook("/webhook")
+    response = client.post("/webhook", headers={"x-telegram-bot-api-secret-token": "invalid_secret"})
+    assert response.status_code == 403
+
+
+def test_telegram_webhook_invalid_body() -> None:
+  client = TestClient(app)
+  add_bot_webhook("/webhook")
+  response = client.post("/webhook", content="invalid_body")
+  assert response.status_code == 400
+
+
+def test_telegram_webhook_unexpected_body() -> None:
+  client = TestClient(app)
+  add_bot_webhook("/webhook")
+  response = client.post("/webhook", json={})
+  assert response.status_code == 400
