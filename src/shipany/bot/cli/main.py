@@ -16,6 +16,7 @@ from pydantic_core import Url
 
 from shipany.bot import loader
 from shipany.bot.bindings import default_bindings
+from shipany.bot.config import BotConfig
 from shipany.bot.conversation.models import Flow
 from shipany.bot.providers.secrets import SecretsProvider
 from shipany.bot.web import server
@@ -41,7 +42,7 @@ def run(  # noqa: C901
 
   Expects BOT_TOKEN environment variables to be set.
   """
-  from shipany.bot.config import bot_config
+  bot_config = BotConfig()
 
   url: HttpUrl | Path | None = None
 
@@ -52,6 +53,10 @@ def run(  # noqa: C901
   if url is None:
     with contextlib.suppress(OSError):
       url = Path(source).resolve(strict=True)
+
+  if not web and bot_config.telegram_webhook_url:
+    typer.echo("Web server is required for the webhook mode. Use --web flag to enable it.")
+    raise typer.Exit(1)
 
   match url:
     case Url():
@@ -82,7 +87,7 @@ def run(  # noqa: C901
     case "aiogram":
       from shipany.bot.contrib.aiogram import backend
 
-      bot_server = backend.serve(flow, bot_config)
+      bot_server = backend.serve(flow)
     case _:
       typer.echo(f"Invalid backend: {backend_to_use}. Please provide a supported backend.")
       raise typer.Exit(1)

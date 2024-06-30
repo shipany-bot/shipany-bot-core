@@ -1,24 +1,36 @@
 from __future__ import annotations
 
+import json
 import logging
 import typing as t
+from contextlib import asynccontextmanager
 
+import inject
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from starlette import status
 
+from shipany.bot.config import BotConfig
 from shipany.bot.contrib.aiogram.factories import telegram_objects
 from shipany.bot.conversation import errors
 from shipany.bot.conversation.context import conversation_context
 from shipany.bot.conversation.handlers.activations import ActivationHandler
 from shipany.bot.conversation.models import Conversation, Flow, WebhookActivation
-
-if t.TYPE_CHECKING:
-  from shipany.bot.config import BotConfig
+from shipany.bot.web.events import WebserverEventsDispatcher
 
 logger = logging.getLogger(__name__)
-app = FastAPI()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> t.AsyncIterator[None]:
+  await inject.instance(WebserverEventsDispatcher).on_startup()
+  yield
+  await inject.instance(WebserverEventsDispatcher).on_shutdown()
+
+
+app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -70,6 +82,22 @@ def _find_webhook_activation(
         yield activation, conversation
 
 
+async def _feed_endpoint(request: Request) -> Response:
+  try:
+    updates = await request.json()
+  except json.JSONDecodeError:
+    return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Expecting JSON payload.")
+
+  try:
+    response = await inject.instance(WebserverEventsDispatcher).on_updates(updates)
+  except ValidationError:
+    return Response(status_code=status.HTTP_400_BAD_REQUEST, content="Invalid JSON payload.")
+
+  if response is not None:
+    logger.warning("Unprocessed response from the dispatcher: %s", response)
+  return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 async def _hook_endpoint(
   request: Request,
   flow: t.Annotated[Flow, Depends(current_bot_flow)],
@@ -116,8 +144,23 @@ def add_webhooks(flow: Flow) -> None:
   app.dependency_overrides[current_bot_flow] = lambda: flow
 
 
+def secret_in_headers(request: Request) -> None:
+  bot_config = BotConfig()
+
+  secret = bot_config.web_bot_webhook_secret.get_secret_value()
+  if secret != request.headers.get("x-telegram-bot-api-secret-token", ""):
+    raise HTTPException(detail="Secret is invalid", status_code=status.HTTP_403_FORBIDDEN)
+
+
+def add_bot_webhook(path: str) -> None:
+  logger.info("Adding bot webhook path: %s", path)
+  app.add_api_route(path, endpoint=_feed_endpoint, methods=["POST"], dependencies=[Depends(secret_in_headers)])
+
+
 def serve(flow: Flow, bot_config: BotConfig) -> t.Coroutine[t.Any, t.Any, None]:
   add_webhooks(flow)
+  if bot_config.web_bot_webhook_path:
+    add_bot_webhook(bot_config.web_bot_webhook_path)
 
   config = uvicorn.Config(
     app,
